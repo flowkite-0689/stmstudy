@@ -11,6 +11,8 @@ int main(void)
     uint8_t key_num;
     static uint8_t led_state[4] = {0, 0, 0, 0}; // 每个LED的状态
 
+
+    delay_init(168);
     // 初始化硬件
     KEY_Init();
     LED_Init();

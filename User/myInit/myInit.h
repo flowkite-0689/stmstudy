@@ -15,6 +15,7 @@
 #include "stm32f4xx.h"
 #include "stm32f4xx_gpio.h"
 #include "stm32f4xx_rcc.h"
+#include <stddef.h>
 
 /**
  * @defgroup LED_Definitions LED引脚定义
@@ -67,9 +68,10 @@ void Delay_ms(uint32_t ms);
  * @param GPIO_Speed GPIO速度（2MHz、25MHz、50MHz、100MHz）
  * @param GPIO_OType GPIO输出类型（推挽、开漏）
  * @param GPIO_PuPd GPIO上下拉配置（上拉、下拉、无上下拉）
+ * @return 0: 成功, 1: 参数错误, 2: 无效GPIO端口
  * @note 函数会自动根据GPIOx参数使能对应的时钟
  */
-void GPIO_MyInit(GPIO_TypeDef *GPIOx, uint32_t GPIO_Pin, GPIOMode_TypeDef GPIO_Mode,
+int8_t GPIO_MyInit(GPIO_TypeDef *GPIOx, uint32_t GPIO_Pin, GPIOMode_TypeDef GPIO_Mode,
                  GPIOSpeed_TypeDef GPIO_Speed, GPIOOType_TypeDef GPIO_OType,
                  GPIOPuPd_TypeDef GPIO_PuPd);
 
@@ -79,7 +81,7 @@ void GPIO_MyInit(GPIO_TypeDef *GPIOx, uint32_t GPIO_Pin, GPIOMode_TypeDef GPIO_M
  * @param GPIOx 按键所在GPIO端口
  * @note 配置为高速输入模式，推挽输出，无上下拉
  */
-void KEY_Init(uint32_t KEY_PIN, GPIO_TypeDef *GPIOx);
+int8_t KEY_Init(uint32_t KEY_PIN, GPIO_TypeDef *GPIOx);
 
 /**
  * @brief LED GPIO初始化函数
@@ -87,7 +89,7 @@ void KEY_Init(uint32_t KEY_PIN, GPIO_TypeDef *GPIOx);
  * @param GPIOx LED所在GPIO端口
  * @note 配置为高速输出模式，推挽输出，无上下拉
  */
-void LED_Init(uint32_t LED_PIN, GPIO_TypeDef *GPIOx);
+int8_t LED_Init(uint32_t LED_PIN, GPIO_TypeDef *GPIOx);
 
 /**
  * @brief 蜂鸣器GPIO初始化函数
@@ -95,7 +97,7 @@ void LED_Init(uint32_t LED_PIN, GPIO_TypeDef *GPIOx);
  * @param GPIOx 蜂鸣器所在GPIO端口
  * @note 配置为50MHz输出模式，推挽输出，无上下拉
  */
-void BEEP_Init(uint32_t BEEP_PIN, GPIO_TypeDef *GPIOx);
+int8_t BEEP_Init(uint32_t BEEP_PIN, GPIO_TypeDef *GPIOx);
 
 /**
  * @brief 按键GPIO初始化二次封装函数
@@ -107,7 +109,7 @@ void BEEP_Init(uint32_t BEEP_PIN, GPIO_TypeDef *GPIOx);
  *       - 3: 初始化KEY3 (PE4)
  * @note 其他值则不进行任何操作
  */
-void KEY_Initx(uint32_t x);
+int8_t KEY_Initx(uint32_t x);
 
 /**
  * @brief LED GPIO初始化二次封装函数
@@ -119,7 +121,7 @@ void KEY_Initx(uint32_t x);
  *       - 3: 初始化LED3 (PE14)
  * @note 其他值则不进行任何操作
  */
-void LED_Initx(uint32_t x);
+int8_t LED_Initx(uint32_t x);
 
 /**
  * @brief 蜂鸣器GPIO初始化二次封装函数
@@ -129,7 +131,7 @@ void LED_Initx(uint32_t x);
  * @note 其他值则不进行任何操作
  * @note 预留接口，可扩展支持多个蜂鸣器
  */
-void BEEP_Initx(uint32_t x);
+int8_t BEEP_Initx(uint32_t x);
 
 //位带操作
 /*

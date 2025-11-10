@@ -8,6 +8,10 @@
 
 #include "./myInit.h"
 
+#ifndef NULL
+#define NULL ((void*)0)
+#endif
+
 /**
  * @brief 简单的循环延时函数
  * @param count 延时循环次数
@@ -42,14 +46,24 @@ void Delay_ms(uint32_t ms)
  * @param GPIO_Speed GPIO速度（2MHz、25MHz、50MHz、100MHz）
  * @param GPIO_OType GPIO输出类型（推挽、开漏）
  * @param GPIO_PuPd GPIO上下拉配置（上拉、下拉、无上下拉）
+ * @return 0: 成功, 1: 参数错误, 2: 无效GPIO端口
  * @note 函数会根据传入的GPIOx参数自动使能对应的AHB1时钟
  */
-void GPIO_MyInit(GPIO_TypeDef *GPIOx, uint32_t GPIO_Pin, GPIOMode_TypeDef GPIO_Mode,
+int8_t GPIO_MyInit(GPIO_TypeDef *GPIOx, uint32_t GPIO_Pin, GPIOMode_TypeDef GPIO_Mode,
                  GPIOSpeed_TypeDef GPIO_Speed, GPIOOType_TypeDef GPIO_OType,
                  GPIOPuPd_TypeDef GPIO_PuPd)
 {
   GPIO_InitTypeDef GPIO_InitStructure;
 
+  // 参数验证
+  if (GPIOx == NULL) {
+    return 2; // 无效GPIO端口指针
+  }
+  
+  if (GPIO_Pin == 0) {
+    return 1; // 无效引脚参数
+  }
+  
   // 根据实际使用的GPIO端口使能对应时钟
   if (GPIOx == GPIOA)
   {
@@ -87,6 +101,10 @@ void GPIO_MyInit(GPIO_TypeDef *GPIOx, uint32_t GPIO_Pin, GPIOMode_TypeDef GPIO_M
   {
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOI, ENABLE);
   }
+  else
+  {
+    return 2; // 无效GPIO端口
+  }
 
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode;
@@ -94,118 +112,144 @@ void GPIO_MyInit(GPIO_TypeDef *GPIOx, uint32_t GPIO_Pin, GPIOMode_TypeDef GPIO_M
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed;
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd;
   GPIO_Init(GPIOx, &GPIO_InitStructure);
+  
+  return 0; // 成功
 }
 
 /**
  * @brief 按键GPIO初始化函数
  * @param KEY_PIN 按键引脚（如GPIO_Pin_0等）
  * @param GPIOx 按键所在GPIO端口（如GPIOA等）
+ * @return 0: 成功, 1: 参数错误, 2: 无效GPIO端口
  * @note 配置为高速输入模式，推挽输出类型，无上下拉
  * @note 建议根据实际硬件设计配置上下拉电阻
  */
-void KEY_Init(uint32_t KEY_PIN, GPIO_TypeDef *GPIOx)
+int8_t KEY_Init(uint32_t KEY_PIN, GPIO_TypeDef *GPIOx)
 {
-  GPIO_MyInit(GPIOx, KEY_PIN, GPIO_Mode_IN, GPIO_High_Speed,
-              GPIO_OType_PP, GPIO_PuPd_NOPULL);
+  // 参数验证
+  if (GPIOx == NULL) {
+    return 2; // 无效GPIO端口指针
+  }
+  
+  if (KEY_PIN == 0) {
+    return 1; // 无效引脚参数
+  }
+  
+  return GPIO_MyInit(GPIOx, KEY_PIN, GPIO_Mode_IN, GPIO_High_Speed,
+                     GPIO_OType_PP, GPIO_PuPd_NOPULL);
 }
 
 /**
  * @brief LED GPIO初始化函数
  * @param LED_PIN LED引脚（如GPIO_Pin_9等）
  * @param GPIOx LED所在GPIO端口（如GPIOF等）
+ * @return 0: 成功, 1: 参数错误, 2: 无效GPIO端口
  * @note 配置为高速输出模式，推挽输出，无上下拉
  * @note 适用于驱动LED等低功耗设备
  */
-void LED_Init(uint32_t LED_PIN, GPIO_TypeDef *GPIOx)
+int8_t LED_Init(uint32_t LED_PIN, GPIO_TypeDef *GPIOx)
 {
-  GPIO_MyInit(GPIOx, LED_PIN, GPIO_Mode_OUT, GPIO_High_Speed, GPIO_OType_PP, GPIO_PuPd_NOPULL);
+  // 参数验证
+  if (GPIOx == NULL) {
+    return 2; // 无效GPIO端口指针
+  }
+  
+  if (LED_PIN == 0) {
+    return 1; // 无效引脚参数
+  }
+  
+  return GPIO_MyInit(GPIOx, LED_PIN, GPIO_Mode_OUT, GPIO_High_Speed, GPIO_OType_PP, GPIO_PuPd_NOPULL);
 }
 
 /**
  * @brief 蜂鸣器GPIO初始化函数
  * @param BEEP_PIN 蜂鸣器引脚（如GPIO_Pin_8等）
  * @param GPIOx 蜂鸣器所在GPIO端口（如GPIOA等）
+ * @return 0: 成功, 1: 参数错误, 2: 无效GPIO端口
  * @note 配置为50MHz输出模式，推挽输出，无上下拉
  * @note 适用于驱动蜂鸣器等中等频率设备
  */
-void BEEP_Init(uint32_t BEEP_PIN, GPIO_TypeDef *GPIOx)
+int8_t BEEP_Init(uint32_t BEEP_PIN, GPIO_TypeDef *GPIOx)
 {
-  GPIO_MyInit(GPIOx, BEEP_PIN, GPIO_Mode_OUT, GPIO_Speed_50MHz, GPIO_OType_PP, GPIO_PuPd_NOPULL);
+  // 参数验证
+  if (GPIOx == NULL) {
+    return 2; // 无效GPIO端口指针
+  }
+  
+  if (BEEP_PIN == 0) {
+    return 1; // 无效引脚参数
+  }
+  
+  return GPIO_MyInit(GPIOx, BEEP_PIN, GPIO_Mode_OUT, GPIO_Speed_50MHz, GPIO_OType_PP, GPIO_PuPd_NOPULL);
 }
 /**
  * @brief 按键GPIO初始化二次封装函数实现
  * @param x 按键编号(0-3)
+ * @return 0: 成功, 1: 参数错误
  * @note 通过switch-case语句根据编号选择对应的按键GPIO进行初始化
  * @note 该函数简化了按键初始化调用，只需要传入编号即可
  * @note 不支持0-3以外的编号，传入其他值将不执行任何操作
  */
-void KEY_Initx(uint32_t x)
+int8_t KEY_Initx(uint32_t x)
 {
   switch (x)
   {
   case 0:
-    KEY_Init(KEY0_PIN, KEY0_PORT);
-    break;
+    return KEY_Init(KEY0_PIN, KEY0_PORT);
   case 1:
-    KEY_Init(KEY1_PIN, KEY1_PORT);
-    break;
+    return KEY_Init(KEY1_PIN, KEY1_PORT);
   case 2:
-    KEY_Init(KEY2_PIN, KEY2_PORT);
-    break;
+    return KEY_Init(KEY2_PIN, KEY2_PORT);
   case 3:
-    KEY_Init(KEY3_PIN, KEY3_PORT);
-    break;
+    return KEY_Init(KEY3_PIN, KEY3_PORT);
 
   default:
-    break;
+    return 1; // 参数错误
   }
 }
 
 /**
  * @brief LED GPIO初始化二次封装函数实现
  * @param x LED编号(0-3)
+ * @return 0: 成功, 1: 参数错误
  * @note 通过switch-case语句根据编号选择对应的LED GPIO进行初始化
  * @note 该函数简化了LED初始化调用，只需要传入编号即可
  * @note 不支持0-3以外的编号，传入其他值将不执行任何操作
  */
-void LED_Initx(uint32_t x)
+int8_t LED_Initx(uint32_t x)
 {
   switch (x)
   {
   case 0:
-    LED_Init(LED0_PIN, LED0_PORT);
-    break;
+    return LED_Init(LED0_PIN, LED0_PORT);
   case 1:
-    LED_Init(LED1_PIN, LED1_PORT);
-    break;
+    return LED_Init(LED1_PIN, LED1_PORT);
   case 2:
-    LED_Init(LED2_PIN, LED2_PORT);
-    break;
+    return LED_Init(LED2_PIN, LED2_PORT);
   case 3:
-    LED_Init(LED3_PIN, LED3_PORT);
-    break;
+    return LED_Init(LED3_PIN, LED3_PORT);
   default:
-    break;
+    return 1; // 参数错误
   }
 }
 
 /**
  * @brief 蜂鸣器GPIO初始化二次封装函数实现
  * @param x 蜂鸣器编号
+ * @return 0: 成功, 1: 参数错误
  * @note 通过switch-case语句根据编号选择对应的蜂鸣器GPIO进行初始化
  * @note 当前仅支持编号0，为后续扩展预留接口
  * @note 不支持编号0以外的值，传入其他值将不执行任何操作
  */
-void BEEP_Initx(uint32_t x)
+int8_t BEEP_Initx(uint32_t x)
 {
   switch (x)
   {
   case 0:
-    BEEP_Init(BEEP0_PIN, BEEP0_PORT);
-    break;
+    return BEEP_Init(BEEP0_PIN, BEEP0_PORT);
 
   default:
-    break;
+    return 1; // 参数错误
   }
 }
 

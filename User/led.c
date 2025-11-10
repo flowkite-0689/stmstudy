@@ -86,16 +86,16 @@ int8_t LED_Set(uint8_t led_num, uint8_t state)
     switch (led_num)
     {
         case 0:
-            LED0(state);
+            LED0 = state;
             break;
         case 1:
-            LED1(state);
+            LED1 = state;
             break;
         case 2:
-            LED2(state);
+            LED2 = state;
             break;
         case 3:
-            LED3(state);
+            LED3 = state;
             break;
         default:
             return LED_INVALID_LED;
@@ -129,10 +129,10 @@ int8_t LED_Toggle(uint8_t led_num)
  */
 int8_t LED_Set_All(uint8_t state)
 {
-    LED0(state);
-    LED1(state);
-    LED2(state);
-    LED3(state);
+    LED0 = state;
+    LED1 = state;
+    LED2 = state;
+    LED3 = state;
     
     return LED_OK;
 }

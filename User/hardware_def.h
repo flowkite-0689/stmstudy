@@ -13,6 +13,7 @@
 #define _HARDWARE_DEF_H_
 
 #include "stm32f4xx.h"
+#include "stm32f4xx_gpio.h"
 
 // ==================================
 // 硬件引脚定义
@@ -133,33 +134,6 @@
  * @{
  */
 
-/**
- * @brief LED0控制宏
- * @param state LED状态：0-亮，1-灭
- * @note 使用位带操作直接控制LED0
- */
-#define LED0(state) (state ? GPIO_SET(LED0_PORT, LED0_NUM) : GPIO_RST(LED0_PORT, LED0_NUM))
-
-/**
- * @brief LED1控制宏
- * @param state LED状态：0-亮，1-灭
- * @note 使用位带操作直接控制LED1
- */
-#define LED1(state) (state ? GPIO_SET(LED1_PORT, LED1_NUM) : GPIO_RST(LED1_PORT, LED1_NUM))
-
-/**
- * @brief LED2控制宏
- * @param state LED状态：0-亮，1-灭
- * @note 使用位带操作直接控制LED2
- */
-#define LED2(state) (state ? GPIO_SET(LED2_PORT, LED2_NUM) : GPIO_RST(LED2_PORT, LED2_NUM))
-
-/**
- * @brief LED3控制宏
- * @param state LED状态：0-亮，1-灭
- * @note 使用位带操作直接控制LED3
- */
-#define LED3(state) (state ? GPIO_SET(LED3_PORT, LED3_NUM) : GPIO_RST(LED3_PORT, LED3_NUM))
 
 /**
  * @brief LED状态读取宏
@@ -169,6 +143,41 @@
 #define LED1_STATE() GPIO_IN(LED1_PORT, LED1_NUM)
 #define LED2_STATE() GPIO_IN(LED2_PORT, LED2_NUM)
 #define LED3_STATE() GPIO_IN(LED3_PORT, LED3_NUM)
+
+/** @} */
+
+// ==================================
+// LED直接赋值宏定义（实现LED0=0语法）
+// ==================================
+
+
+/**
+ * @brief LED0直接赋值宏
+ * @note 使用方法：LED0 = 0; // 点亮LED0
+ * @note 使用方法：LED0 = 1; // 熄灭LED0
+ */
+#define LED0 GPIO_OUT(LED0_PORT,LED0_NUM)
+
+/**
+ * @brief LED1直接赋值宏
+ * @note 使用方法：LED1 = 0; // 点亮LED1
+ * @note 使用方法：LED1 = 1; // 熄灭LED1
+ */
+#define LED1 GPIO_OUT(LED1_PORT,LED1_NUM)
+
+/**
+ * @brief LED2直接赋值宏
+ * @note 使用方法：LED2 = 0; // 点亮LED2
+ * @note 使用方法：LED2 = 1; // 熄灭LED2
+ */
+#define LED2 GPIO_OUT(LED2_PORT,LED2_NUM)
+
+/**
+ * @brief LED3直接赋值宏
+ * @note 使用方法：LED3 = 0; // 点亮LED3
+ * @note 使用方法：LED3 = 1; // 熄灭LED3
+ */
+#define LED3 GPIO_OUT(LED3_PORT,LED3_NUM)
 
 /** @} */
 
@@ -201,58 +210,5 @@
 #define KEY3_STATE() GPIO_IN(KEY3_PORT, KEY3_NUM)
 /** @} */
 
-// ==================================
-// LED直接赋值实现方案
-// ==================================
+#endif
 
-/**
- * @defgroup LED_Direct_Assign_LED 直接赋值实现
- * @brief 实现LED0=0这样的直接赋值语法
- * @note 在C语言中，使用全局变量和位带操作实现此功能
- * @{
- */
-
-/**
- * @brief LED控制结构体定义
- * @note 通过重载赋值操作实现LED控制
- */
-typedef struct {
-    volatile uint32_t *port;  // GPIO端口指针
-    uint32_t pin;             // 引脚号
-    uint32_t bit_addr;        // 位带地址
-} LED_Controller;
-
-/**
- * @brief LED控制器赋值函数
- * @param led LED控制器指针
- * @param value 赋值（0-亮，1-灭）
- * @note 实现类似 LED0 = 0 的效果
- */
-static inline void LED_Assign(LED_Controller *led, uint8_t value) {
-    if (value) {
-        GPIO_Set(led->port, led->pin);
-    } else {
-        GPIO_Reset(led->port, led->pin);
-    }
-}
-
-/**
- * @brief LED控制器赋值操作符宏
- * @param led_name LED名称
- * @param value 赋值
- * @note 实现类似 LED0 = 0 的语法
- */
-#define LED_ASSIGN(led_name, value) LED_Assign(&led_name, value)
-
-/**
- * @brief LED控制器定义
- * @note 使用方法：LED_ASSIGN(LED0, 0); // 点亮LED0
- */
-extern LED_Controller LED0;
-extern LED_Controller LED1; 
-extern LED_Controller LED2;
-extern LED_Controller LED3;
-
-/** @} */
-
-#endif /* _HARDWARE_DEF_H_ */

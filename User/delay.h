@@ -1,0 +1,45 @@
+/**
+ * @file delay.h
+ * @brief STM32F4xx 延时函数模块
+ * @author flowkite-0689
+ * @version v2.0
+ * @date 2025.11.10
+ * 
+ * 本文件提供STM32F4系列微控制器的延时功能，
+ * 包括毫秒级延时和微秒级延时。
+ * 采用分层架构设计，提供精确的软件延时接口。
+ */
+
+#ifndef _DELAY_H_
+#define _DELAY_H_
+
+#include "stm32f4xx.h"
+
+// ==================================
+// 延时函数声明
+// ==================================
+
+/**
+ * @brief 简单的循环延时函数
+ * @param count 延时循环次数
+ * @note 这是一个简单的软件延时，延时时间取决于CPU频率
+ */
+void Delay_Cycles(uint32_t count);
+
+/**
+ * @brief 毫秒级延时函数
+ * @param ms 延时时间（单位：毫秒）
+ * @note 基于168MHz系统时钟的简单延时，约1ms=32000个循环周期
+ * @warning 此函数为软件延时，精度较低，不适合需要精确计时的场景
+ */
+void Delay_ms(uint32_t ms);
+
+/**
+ * @brief 微秒级延时函数
+ * @param us 延时时间（单位：微秒）
+ * @note 基于168MHz系统时钟的简单延时，约1us=32个循环周期
+ * @warning 此函数为软件延时，精度较低，不适合需要精确计时的场景
+ */
+void Delay_us(uint32_t us);
+
+#endif /* _DELAY_H_ */

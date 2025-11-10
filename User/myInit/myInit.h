@@ -31,19 +31,6 @@
 #define LED3_PORT GPIOE      ///< LED3端口定义
 /** @} */
 
-/**
- * @defgroup KEY_Definitions 按键引脚定义
- * @{
- */
-#define KEY0_PIN GPIO_Pin_0 ///< 按键0引脚定义
-#define KEY0_PORT GPIOA     ///< 按键0端口定义
-#define KEY1_PIN GPIO_Pin_2 ///< 按键1引脚定义
-#define KEY1_PORT GPIOE     ///< 按键1端口定义
-#define KEY2_PIN GPIO_Pin_3 ///< 按键2引脚定义
-#define KEY2_PORT GPIOE     ///< 按键2端口定义
-#define KEY3_PIN GPIO_Pin_4 ///< 按键3引脚定义
-#define KEY3_PORT GPIOE     ///< 按键3端口定义
-/** @} */
 
 /**
  * @defgroup BEEP_Definitions 蜂鸣器引脚定义
@@ -75,13 +62,7 @@ int8_t GPIO_MyInit(GPIO_TypeDef *GPIOx, uint32_t GPIO_Pin, GPIOMode_TypeDef GPIO
                  GPIOSpeed_TypeDef GPIO_Speed, GPIOOType_TypeDef GPIO_OType,
                  GPIOPuPd_TypeDef GPIO_PuPd);
 
-/**
- * @brief 按键GPIO初始化函数
- * @param KEY_PIN 按键引脚
- * @param GPIOx 按键所在GPIO端口
- * @note 配置为高速输入模式，推挽输出，无上下拉
- */
-int8_t KEY_Init(uint32_t KEY_PIN, GPIO_TypeDef *GPIOx);
+
 
 /**
  * @brief LED GPIO初始化函数
@@ -99,17 +80,7 @@ int8_t LED_Init(uint32_t LED_PIN, GPIO_TypeDef *GPIOx);
  */
 int8_t BEEP_Init(uint32_t BEEP_PIN, GPIO_TypeDef *GPIOx);
 
-/**
- * @brief 按键GPIO初始化二次封装函数
- * @param x 按键编号(0-3)
- * @note 根据编号初始化对应的按键GPIO:
- *       - 0: 初始化KEY0 (PA0)
- *       - 1: 初始化KEY1 (PE2)
- *       - 2: 初始化KEY2 (PE3)
- *       - 3: 初始化KEY3 (PE4)
- * @note 其他值则不进行任何操作
- */
-int8_t KEY_Initx(uint32_t x);
+
 
 /**
  * @brief LED GPIO初始化二次封装函数
@@ -240,45 +211,6 @@ int8_t BEEP_Initx(uint32_t x);
 /** @} */
 
 /**
- * @defgroup KEY_BitBand_Operations 按键位带操作宏定义
- * @brief 提供按键读取的位带操作宏定义，支持直接读取按键引脚状态
- * @note 按键硬件设计为下拉模式，按下时为低电平(0)，释放时为高电平(1)
- * @{
- */
-/**
- * @brief 按键0状态读取宏
- * @return 按键状态：0-按下，1-释放
- * @note 使用位带操作直接读取按键0 (PA0)当前状态
- * @note 硬件设计：按键按下时为低电平，释放时为高电平
- */
-#define KEY0_STATE() GPIO_IN(KEY0_PORT, 0)
-
-/**
- * @brief 按键1状态读取宏
- * @return 按键状态：0-按下，1-释放
- * @note 使用位带操作直接读取按键1 (PE2)当前状态
- * @note 硬件设计：按键按下时为低电平，释放时为高电平
- */
-#define KEY1_STATE() GPIO_IN(KEY1_PORT, 2)
-
-/**
- * @brief 按键2状态读取宏
- * @return 按键状态：0-按下，1-释放
- * @note 使用位带操作直接读取按键2 (PE3)当前状态
- * @note 硬件设计：按键按下时为低电平，释放时为高电平
- */
-#define KEY2_STATE() GPIO_IN(KEY2_PORT, 3)
-
-/**
- * @brief 按键3状态读取宏
- * @return 按键状态：0-按下，1-释放
- * @note 使用位带操作直接读取按键3 (PE4)当前状态
- * @note 硬件设计：按键按下时为低电平，释放时为高电平
- */
-#define KEY3_STATE() GPIO_IN(KEY3_PORT, 4)
-/** @} */
-
-/**
  * @defgroup LED_Control_Functions LED控制函数声明
  * @brief 提供LED控制的标准函数接口，支持函数式调用
  * @note LED硬件设计为低电平点亮，高电平熄灭
@@ -358,43 +290,5 @@ void BEEP0_Set(uint8_t state);
 uint8_t BEEP0_GetState(void);
 /** @} */
 
-/**
- * @defgroup KEY_Read_Functions 按键读取函数声明
- * @brief 提供按键读取的标准函数接口，支持函数式调用
- * @note 按键硬件设计为下拉模式，按下时为低电平(0)，释放时为高电平(1)
- * @{
- */
-/**
- * @brief 按键0状态读取函数
- * @return 按键状态：0-按下，1-释放
- * @note 使用位带操作读取按键0 (PA0)当前状态
- * @note 硬件设计：按键按下时为低电平，释放时为高电平
- */
-uint8_t KEY0_GetState(void);
-
-/**
- * @brief 按键1状态读取函数
- * @return 按键状态：0-按下，1-释放
- * @note 使用位带操作读取按键1 (PE2)当前状态
- * @note 硬件设计：按键按下时为低电平，释放时为高电平
- */
-uint8_t KEY1_GetState(void);
-
-/**
- * @brief 按键2状态读取函数
- * @return 按键状态：0-按下，1-释放
- * @note 使用位带操作读取按键2 (PE3)当前状态
- * @note 硬件设计：按键按下时为低电平，释放时为高电平
- */
-uint8_t KEY2_GetState(void);
-
-/**
- * @brief 按键3状态读取函数
- * @return 按键状态：0-按下，1-释放
- * @note 使用位带操作读取按键3 (PE4)当前状态
- * @note 硬件设计：按键按下时为低电平，释放时为高电平
- */
-uint8_t KEY3_GetState(void);
-/** @} */
 
 #endif

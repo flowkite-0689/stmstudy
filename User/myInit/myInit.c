@@ -117,29 +117,6 @@ int8_t GPIO_MyInit(GPIO_TypeDef *GPIOx, uint32_t GPIO_Pin, GPIOMode_TypeDef GPIO
 }
 
 /**
- * @brief 按键GPIO初始化函数
- * @param KEY_PIN 按键引脚（如GPIO_Pin_0等）
- * @param GPIOx 按键所在GPIO端口（如GPIOA等）
- * @return 0: 成功, 1: 参数错误, 2: 无效GPIO端口
- * @note 配置为高速输入模式，推挽输出类型，无上下拉
- * @note 建议根据实际硬件设计配置上下拉电阻
- */
-int8_t KEY_Init(uint32_t KEY_PIN, GPIO_TypeDef *GPIOx)
-{
-  // 参数验证
-  if (GPIOx == NULL) {
-    return 2; // 无效GPIO端口指针
-  }
-  
-  if (KEY_PIN == 0) {
-    return 1; // 无效引脚参数
-  }
-  
-  return GPIO_MyInit(GPIOx, KEY_PIN, GPIO_Mode_IN, GPIO_High_Speed,
-                     GPIO_OType_PP, GPIO_PuPd_NOPULL);
-}
-
-/**
  * @brief LED GPIO初始化函数
  * @param LED_PIN LED引脚（如GPIO_Pin_9等）
  * @param GPIOx LED所在GPIO端口（如GPIOF等）
@@ -181,31 +158,6 @@ int8_t BEEP_Init(uint32_t BEEP_PIN, GPIO_TypeDef *GPIOx)
   }
   
   return GPIO_MyInit(GPIOx, BEEP_PIN, GPIO_Mode_OUT, GPIO_Speed_50MHz, GPIO_OType_PP, GPIO_PuPd_NOPULL);
-}
-/**
- * @brief 按键GPIO初始化二次封装函数实现
- * @param x 按键编号(0-3)
- * @return 0: 成功, 1: 参数错误
- * @note 通过switch-case语句根据编号选择对应的按键GPIO进行初始化
- * @note 该函数简化了按键初始化调用，只需要传入编号即可
- * @note 不支持0-3以外的编号，传入其他值将不执行任何操作
- */
-int8_t KEY_Initx(uint32_t x)
-{
-  switch (x)
-  {
-  case 0:
-    return KEY_Init(KEY0_PIN, KEY0_PORT);
-  case 1:
-    return KEY_Init(KEY1_PIN, KEY1_PORT);
-  case 2:
-    return KEY_Init(KEY2_PIN, KEY2_PORT);
-  case 3:
-    return KEY_Init(KEY3_PIN, KEY3_PORT);
-
-  default:
-    return 1; // 参数错误
-  }
 }
 
 /**
@@ -374,57 +326,6 @@ void BEEP0_Set(uint8_t state)
 uint8_t BEEP0_GetState(void)
 {
   return BEEP0_STATE();
-}
-/** @} */
-
-/**
- * @defgroup KEY_Read_Functions 按键读取函数实现
- * @brief 提供按键读取的标准函数接口实现
- * @note 按键硬件设计为下拉模式，按下时为低电平(0)，释放时为高电平(1)
- * @{
- */
-/**
- * @brief 按键0状态读取函数
- * @return 按键状态：0-按下，1-释放
- * @note 使用位带操作读取按键0 (PA0)当前状态
- * @note 硬件设计：按键按下时为低电平，释放时为高电平
- */
-uint8_t KEY0_GetState(void)
-{
-  return KEY0_STATE();
-}
-
-/**
- * @brief 按键1状态读取函数
- * @return 按键状态：0-按下，1-释放
- * @note 使用位带操作读取按键1 (PE2)当前状态
- * @note 硬件设计：按键按下时为低电平，释放时为高电平
- */
-uint8_t KEY1_GetState(void)
-{
-  return KEY1_STATE();
-}
-
-/**
- * @brief 按键2状态读取函数
- * @return 按键状态：0-按下，1-释放
- * @note 使用位带操作读取按键2 (PE3)当前状态
- * @note 硬件设计：按键按下时为低电平，释放时为高电平
- */
-uint8_t KEY2_GetState(void)
-{
-  return KEY2_STATE();
-}
-
-/**
- * @brief 按键3状态读取函数
- * @return 按键状态：0-按下，1-释放
- * @note 使用位带操作读取按键3 (PE4)当前状态
- * @note 硬件设计：按键按下时为低电平，释放时为高电平
- */
-uint8_t KEY3_GetState(void)
-{
-  return KEY3_STATE();
 }
 /** @} */
 

@@ -13,7 +13,7 @@
   * <h2><center>&copy; COPYRIGHT 2016 STMicroelectronics</center></h2>
   *
   * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
-  * You may not use this file except in compliance with the License.
+  * you may not use this file except in compliance with the License.
   * You may obtain a copy of the License at:
   *
   *        http://www.st.com/software_license_agreement_liberty_v2
@@ -29,7 +29,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_it.h"
-
 
 /** @addtogroup Template_Project
   * @{
@@ -134,6 +133,15 @@ void PendSV_Handler(void)
 {
 }
 
+/**
+  * @brief  This function handles SysTick Handler.
+  * @param  None
+  * @retval None
+  */
+void SysTick_Handler(void)
+{
+}
+
 /******************************************************************************/
 /*                 STM32F4xx Peripherals Interrupt Handlers                   */
 /*  Add here the Interrupt Handler for the used peripheral(s) (PPP), for the  */
@@ -153,6 +161,5 @@ void PendSV_Handler(void)
 /**
   * @}
   */ 
-
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

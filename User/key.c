@@ -7,12 +7,87 @@
  */
 
 #include "key.h"
+#include "stm32f4xx_exti.h"
+#include "misc.h"
 
 // ==================================
 // 按键状态机全局变量
 // ==================================
 
 Key_State_t keys[NUM_KEYS]; // 全局变量，存储所有按键状态
+
+// ==================================
+// 按键中断相关全局变量
+// ==================================
+
+volatile uint8_t key_interrupt_flag = 0;  // 按键中断标志
+volatile uint8_t key_interrupt_value = 0; // 按键中断值
+
+// ==================================
+// 按键中断状态机处理函数
+// ==================================
+
+/**
+ * @brief 按键中断状态机处理函数
+ * @param key_num 按键编号(0-3)
+ * @note 在中断服务程序中调用，用于状态机防抖
+ */
+static void KEY_InterruptStateMachine(uint8_t key_num)
+{
+    // 根据当前按键的状态（枚举类型）进行状态机切换
+    switch(keys[key_num].current_state) {
+        // 状态0：按键已释放（稳定状态）
+        case KEY_STATE_RELEASED:
+            // 检测到下降沿中断，进入按下消抖状态
+            keys[key_num].current_state = KEY_STATE_PRESS_DEBOUNCE;
+            keys[key_num].debounce_cnt = 1;
+            break;
+            
+        // 状态1：按键按下消抖中（等待确认是否真的按下）
+        case KEY_STATE_PRESS_DEBOUNCE:
+            // 消抖计数器累加
+            keys[key_num].debounce_cnt++;
+            // 当连续3次检测到按下状态，确认按键真的按下
+            if (keys[key_num].debounce_cnt >= 3) {
+                // 切换到稳定按下状态
+                keys[key_num].current_state = KEY_STATE_PRESSED;
+                
+                // 设置按键中断标志，通知外部有按键事件
+                key_interrupt_flag = 1;
+                switch(key_num) {
+                    case 0: key_interrupt_value = 1; break;
+                    case 1: key_interrupt_value = 2; break;
+                    case 2: key_interrupt_value = 4; break;
+                    case 3: key_interrupt_value = 8; break;
+                }
+            }
+            break;
+            
+        // 状态2：按键已按下（稳定状态）
+        case KEY_STATE_PRESSED:
+            // 在按下状态下收到中断，可能是释放按键
+            keys[key_num].current_state = KEY_STATE_RELEASE_DEBOUNCE;
+            keys[key_num].debounce_cnt = 1;
+            break;
+            
+        // 状态3：按键释放消抖中（等待确认是否真的释放）
+        case KEY_STATE_RELEASE_DEBOUNCE:
+            // 消抖计数器累加
+            keys[key_num].debounce_cnt++;
+            // 当连续3次检测到释放状态，确认按键真的释放
+            if (keys[key_num].debounce_cnt >= 3) {
+                // 切换到稳定释放状态
+                keys[key_num].current_state = KEY_STATE_RELEASED;
+            }
+            break;
+            
+        default:
+            // 异常状态，重置为释放状态
+            keys[key_num].current_state = KEY_STATE_RELEASED;
+            keys[key_num].debounce_cnt = 0;
+            break;
+    }
+}
 
 // ==================================
 // 按键初始化函数实现
@@ -64,7 +139,7 @@ int8_t KEY_Init(void)
     // 初始化所有按键状态为默认值
     for (uint8_t i = 0; i < NUM_KEYS; i++)
     {
-        keys[i].current_state = 1;     // 假设初始状态为释放（高电平）
+        keys[i].current_state = KEY_STATE_RELEASED;     // 正确初始化为释放状态
         keys[i].debounce_cnt = 0;      // 消抖计数器清零
         keys[i].press_event = 0;       // 按键事件标志清零
         keys[i].released_flag = 1;     // 释放标志初始化为已释放
@@ -80,6 +155,9 @@ int8_t KEY_Init(void)
     if (result != KEY_OK) return result;
     
     result = KEY_Init_ByNumber(3);
+    if (result != KEY_OK) return result;
+
+    result= KEY_EXTI_Init();//加入按键外部中断初始化到初始化函数中
     if (result != KEY_OK) return result;
     
     return KEY_OK;
@@ -283,29 +361,69 @@ void KEY_Scan_NonBlocking(void)
         uint8_t current_pin_level = KEY_READ(i); 
 
         // 2. 状态机消抖逻辑
-        if (current_pin_level != keys[i].current_state)
-        {
-            // 电平发生变化，开始消抖计数
-            if (keys[i].debounce_cnt < 10) // 计数到 10 次 (例如 10*5ms = 50ms)
-            {
-                keys[i].debounce_cnt++;
-            }
-            else
-            {
-                // 消抖完成，确认状态改变
-                keys[i].current_state = current_pin_level;
-
-                // 如果状态变为按下 (假设按下是低电平 0)
-                if (keys[i].current_state == 0)
-                {
-                    keys[i].press_event = 1; // 标记按键按下事件
+        switch(keys[i].current_state) {
+            // 状态0：按键已释放（稳定状态）
+            case KEY_STATE_RELEASED:
+                // 若当前电平为低电平（检测到按键按下动作）
+                if (current_pin_level == 0) {
+                    // 进入按下消抖状态，开始消抖计数
+                    keys[i].current_state = KEY_STATE_PRESS_DEBOUNCE;
+                    keys[i].debounce_cnt = 1;
                 }
-            }
-        }
-        else
-        {
-            // 状态稳定，重置消抖计数器
-            keys[i].debounce_cnt = 0;
+                break;
+                
+            // 状态1：按键按下消抖中（等待确认是否真的按下）
+            case KEY_STATE_PRESS_DEBOUNCE:
+                // 若当前仍为低电平（按下状态持续）
+                if (current_pin_level == 0) {
+                    // 消抖计数器累加
+                    keys[i].debounce_cnt++;
+                    // 当连续3次检测到低电平，确认按键真的按下
+                    if (keys[i].debounce_cnt >= 3) {
+                        // 切换到稳定按下状态
+                        keys[i].current_state = KEY_STATE_PRESSED;
+                        keys[i].press_event = 1; // 标记按键按下事件
+                    }
+                } else {
+                    // 若中途检测到高电平，可能是抖动，退回释放状态
+                    keys[i].current_state = KEY_STATE_RELEASED;
+                    keys[i].debounce_cnt = 0;
+                }
+                break;
+                
+            // 状态2：按键已按下（稳定状态）
+            case KEY_STATE_PRESSED:
+                // 若当前电平为高电平（检测到按键释放动作）
+                if (current_pin_level == 1) {
+                    // 进入释放消抖状态，开始消抖计数
+                    keys[i].current_state = KEY_STATE_RELEASE_DEBOUNCE;
+                    keys[i].debounce_cnt = 1;
+                }
+                break;
+                
+            // 状态3：按键释放消抖中（等待确认是否真的释放）
+            case KEY_STATE_RELEASE_DEBOUNCE:
+                // 若当前仍为高电平（释放状态持续）
+                if (current_pin_level == 1) {
+                    // 消抖计数器累加
+                    keys[i].debounce_cnt++;
+                    // 当连续3次检测到高电平，确认按键真的释放
+                    if (keys[i].debounce_cnt >= 3) {
+                        // 切换到稳定释放状态
+                        keys[i].current_state = KEY_STATE_RELEASED;
+                    }
+                } else {
+                    // 若中途检测到低电平，可能是抖动，退回按下状态
+                    keys[i].current_state = KEY_STATE_PRESSED;
+                    keys[i].debounce_cnt = 0;
+                }
+                break;
+                
+            default:
+                // 异常状态，重置为释放状态
+                keys[i].current_state = KEY_STATE_RELEASED;
+                keys[i].debounce_cnt = 0;
+                break;
         }
     }
 }
@@ -322,7 +440,7 @@ uint8_t KEY_Get_Value(uint8_t mode)
         // --- 模式 1: 单次触发模式 (必须释放才能再次检测) ---
         if (mode == 1)
         {
-            if (keys[i].current_state == 0) {
+            if (keys[i].current_state == KEY_STATE_PRESSED) {
                 // 按键当前是按下的，标记为未释放
                 keys[i].released_flag = 0; 
             } else {
@@ -335,7 +453,7 @@ uint8_t KEY_Get_Value(uint8_t mode)
                  // 必须是新事件 且 之前处于释放状态
                  keys[i].press_event = 0; // 清除事件标志
                  // 返回对应的按键值（根据您的定义 KEY0_PRES 等）
-                 return (KEY0_PRES << i); 
+                 return (1 << i); 
             }
         }
         // --- 模式 0: 连续触发模式 ---
@@ -344,10 +462,168 @@ uint8_t KEY_Get_Value(uint8_t mode)
             if (keys[i].press_event)
             {
                 keys[i].press_event = 0; // 清除事件标志
-                return (KEY0_PRES << i);
+                return (1 << i);
             }
         }
     }
     
     return 0; // 无按键事件
+}
+
+// ==================================
+// 按键中断函数实现
+// ==================================
+
+/**
+ * @brief 初始化按键外部中断
+ * @return 错误码：KEY_OK-成功，其他-失败
+ * @note 配置所有按键为外部中断模式，下降沿触发
+ */
+int8_t KEY_EXTI_Init(void)
+{
+    EXTI_InitTypeDef EXTI_InitStructure;
+    NVIC_InitTypeDef NVIC_InitStructure;
+    
+    // // 1. 初始化所有按键GPIO（如果尚未初始化）
+    // int8_t result = KEY_Init();
+    // if (result != KEY_OK) return result;
+    
+    // 2. 使能SYSCFG时钟
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+    
+    // 配置中断优先级组
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); // 2位抢占优先级，2位子优先级
+    
+    // 3. 配置KEY0 (PA0)的外部中断
+    SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOA, EXTI_PinSource0);
+    
+    EXTI_InitStructure.EXTI_Line = EXTI_Line0;
+    EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+    EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling; // 下降沿触发
+    EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+    EXTI_Init(&EXTI_InitStructure);
+    
+    // 配置KEY0中断优先级 - 降低优先级，避免影响系统复位
+    NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+    
+    // 4. 配置KEY1 (PE2)的外部中断
+    SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOE, EXTI_PinSource2);
+    
+    EXTI_InitStructure.EXTI_Line = EXTI_Line2;
+    EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling; // 下降沿触发
+    EXTI_Init(&EXTI_InitStructure);
+    
+    // 配置KEY1中断优先级 - 降低优先级
+
+    NVIC_InitStructure.NVIC_IRQChannel = EXTI2_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+    
+    // 5. 配置KEY2 (PE3)的外部中断
+    SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOE, EXTI_PinSource3);
+    
+    EXTI_InitStructure.EXTI_Line = EXTI_Line3;
+    EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling; // 下降沿触发
+    EXTI_Init(&EXTI_InitStructure);
+    
+    // 配置KEY2中断优先级 - 降低优先级
+    NVIC_InitStructure.NVIC_IRQChannel = EXTI3_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+    
+    // 6. 配置KEY3 (PE4)的外部中断
+    SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOE, EXTI_PinSource4);
+    
+    EXTI_InitStructure.EXTI_Line = EXTI_Line4;
+    EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling; // 下降沿触发
+    EXTI_Init(&EXTI_InitStructure);
+    
+    // 配置KEY3中断优先级 - 降低优先级
+
+    NVIC_InitStructure.NVIC_IRQChannel = EXTI4_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+    
+    return KEY_OK;
+}
+
+/**
+ * @brief 获取中断按键值
+ * @return 按键按键值（KEY0_PRES~KEY3_PRES），0表示无按键事件
+ * @note 非阻塞方式获取按键中断事件
+ */
+uint8_t KEY_Get_Interrupt_Value(void)
+{
+    uint8_t temp_value = 0;
+    
+    if(key_interrupt_flag)
+    {
+        temp_value = key_interrupt_value;
+        key_interrupt_flag = 0; // 清除标志
+        key_interrupt_value = 0; // 清除值
+    }
+    
+    return temp_value;
+}
+
+// ==================================
+// 按键中断服务程序实现
+// ==================================
+
+/**
+ * @brief EXTI Line0 中断服务程序 (KEY0 - PA0)
+ */
+void EXTI0_IRQHandler(void)
+{
+    if(EXTI_GetITStatus(EXTI_Line0) != RESET)
+    {
+        KEY_InterruptStateMachine(0); // 使用状态机进行消抖
+        EXTI_ClearITPendingBit(EXTI_Line0); // 清除中断标志位
+    }
+}
+
+/**
+ * @brief EXTI Line2 中断服务程序 (KEY1 - PE2)
+ */
+void EXTI2_IRQHandler(void)
+{
+    if(EXTI_GetITStatus(EXTI_Line2) != RESET)
+    {
+        KEY_InterruptStateMachine(1); // 使用状态机进行消抖
+        EXTI_ClearITPendingBit(EXTI_Line2); // 清除中断标志位
+    }
+}
+
+/**
+ * @brief EXTI Line3 中断服务程序 (KEY2 - PE3)
+ */
+void EXTI3_IRQHandler(void)
+{
+    if(EXTI_GetITStatus(EXTI_Line3) != RESET)
+    {
+        KEY_InterruptStateMachine(2); // 使用状态机进行消抖
+        EXTI_ClearITPendingBit(EXTI_Line3); // 清除中断标志位
+    }
+}
+
+/**
+ * @brief EXTI Line4 中断服务程序 (KEY3 - PE4)
+ */
+void EXTI4_IRQHandler(void)
+{
+    if(EXTI_GetITStatus(EXTI_Line4) != RESET)
+    {
+        KEY_InterruptStateMachine(3); // 使用状态机进行消抖
+        EXTI_ClearITPendingBit(EXTI_Line4); // 清除中断标志位
+    }
 }

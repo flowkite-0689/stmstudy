@@ -49,16 +49,26 @@
 // ==================================
 // 按键状态机结构体定义
 // ==================================
+/**
+ * @brief 按键状态枚举
+ */
+typedef enum
+{
+    KEY_STATE_RELEASED = 0,      // 按键释放状态（已完成消抖确认）
+    KEY_STATE_PRESSED = 1,      // 按键按下状态（已完成消抖确认）  
+    KEY_STATE_PRESS_DEBOUNCE = 2, // 按键按下消抖中（等待稳定确认）
+    KEY_STATE_RELEASE_DEBOUNCE = 3 // 按键释放消抖中（等待稳定确认）
+} KeyState;
 
 /**
  * @brief 按键状态机结构体
  * @note 用于非阻塞式按键消抖和事件管理
  */
 typedef struct {
-    uint8_t current_state;  ///< 当前引脚状态 (按下/释放)
-    uint8_t debounce_cnt;   ///< 消抖计数器
-    uint8_t press_event;    ///< 按键事件标志 (按下后置1，读取后清0)
-    uint8_t released_flag;  ///< 释放标志，用于单次模式
+    KeyState current_state;      ///< 当前状态机状态
+    uint8_t debounce_cnt;       ///< 消抖计数器
+    uint8_t press_event;        ///< 按键事件标志 (按下后置1，读取后清0)
+    uint8_t released_flag;      ///< 释放标志，用于单次模式
 } Key_State_t;
 
 // ==================================
@@ -174,5 +184,39 @@ void KEY_Scan_NonBlocking(void);
  * @return 按键按键值（KEY0_PRES~KEY3_PRES），0表示无按键按下
  */
 uint8_t KEY_Get_Value(uint8_t mode);
+
+// ==================================
+// 按键中断函数声明
+// ==================================
+
+/**
+ * @brief 初始化按键外部中断
+ * @return 错误码：KEY_OK-成功，其他-失败
+ * @note 配置所有按键为外部中断模式，下降沿触发
+ */
+int8_t KEY_EXTI_Init(void);
+
+/**
+ * @brief 获取中断按键值
+ * @return 按键按键值（KEY0_PRES~KEY3_PRES），0表示无按键事件
+ * @note 非阻塞方式获取按键中断事件
+ */
+uint8_t KEY_Get_Interrupt_Value(void);
+
+// ==================================
+// 按键中断相关全局变量声明
+// ==================================
+
+extern volatile uint8_t key_interrupt_flag;   // 按键中断标志
+extern volatile uint8_t key_interrupt_value;  // 按键中断值
+
+// ==================================
+// 按键中断服务程序声明
+// ==================================
+
+void EXTI0_IRQHandler(void);  // KEY0 (PA0) 外部中断
+void EXTI2_IRQHandler(void);  // KEY1 (PE2) 外部中断
+void EXTI3_IRQHandler(void);  // KEY2 (PE3) 外部中断
+void EXTI4_IRQHandler(void);  // KEY3 (PE4) 外部中断
 
 #endif /* _KEY_H_ */

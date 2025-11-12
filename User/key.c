@@ -604,7 +604,7 @@ int8_t KEY_Debounce_Timer_Init(void)
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM5, ENABLE);
     
     // 系统时钟 168MHz，APB1 分频后 84MHz
-    TIM_TimeBaseStructure.TIM_Period = 20000 - 1;        // 20ms
+    TIM_TimeBaseStructure.TIM_Period = 25000 - 1;        // 25ms
     TIM_TimeBaseStructure.TIM_Prescaler = 84 - 1;        // 1MHz计数频率
     TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
     TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;

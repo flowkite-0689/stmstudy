@@ -3,51 +3,6 @@
 #include "beep.h"
 
 /**
- * @brief LED流水灯效果函数
- */
-void ls(void)
-{
-	uint32_t led_state[4] = {0, 0, 0, 0};
-	uint32_t flag = 0;
-	
-	for (uint32_t i = 0; i < 4;)
-	{
-		for (uint32_t j = 0; j < 4; j++)
-		{
-			led_state[j] = 1;
-			if (j == i)
-			{
-				led_state[j] = 0;
-			}
-		}
-
-		if (flag)
-		{
-			LED0 = led_state[0];
-			LED1 = led_state[1];
-			LED2 = led_state[2];
-			LED3 = led_state[3];
-		}
-		else
-		{
-			LED3 = led_state[0];
-			LED2 = led_state[1];
-			LED1 = led_state[2];
-			LED0 = led_state[3];
-		}
-
-		i++;
-		if (i == 4)
-		{
-			flag = !flag;
-		}
-
-		i = i % 4;
-		delay_ms(120);
-	}
-}
-
-/**
  * @brief 可中断的LED流水灯效果函数
  */
 void ls_interruptible(void)
@@ -98,6 +53,38 @@ void ls_interruptible(void)
 	}
 }
 
+void ysysled()
+{
+
+		uint32_t last_LED0 =0;
+		uint32_t last_LED1 =0;
+	while (1)
+	{
+
+		if (KEY_Get() != 0)
+		{
+			return;
+		}
+		  if ((get_systick()-last_LED0)>=500)
+		{
+				LED0=!LED0;
+				last_LED0=get_systick();
+		}
+	
+	  if ((get_systick()-last_LED1)
+		>=800)
+		{
+				LED1=!LED1;
+				last_LED1=get_systick();
+		}
+		
+	
+	}
+	
+}
+
+
+
 /**
  * @brief 主函数
  */
@@ -127,7 +114,7 @@ int main(void)
 				ls_interruptible();
 				break;
 			case KEY1_PRES: // 控制LED0翻转
-				LED0 = !LED0;
+				ysysled();
 				break;
 			case KEY2_PRES: // 控制LED1翻转
 				LED1 = !LED1;

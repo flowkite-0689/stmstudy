@@ -89,7 +89,7 @@ void ysysled()
  */
 int main(void)
 {
-		NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); // 中断分组配置一次就行
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); // 中断分组配置一次就行
 	debug_init();
 	uint8_t key;					 // 保存键值
 	SysTick_Init();	 // 初始化延时函数
@@ -107,6 +107,10 @@ int main(void)
 	while (1)
 	{
 		key = KEY_Get(); // 从中断获取键值
+		
+		// 处理环形缓冲区发送任务（非阻塞）
+		uart_tx_task();
+		
 		// 处理串口命令
 		Process_Usart_Command();
 		
@@ -130,10 +134,10 @@ int main(void)
 				printf("123456789qwertyuiopasdfgjj\n");
 				break;
 			case KEY2_PRES: // 控制LED2翻转
-				Usart1_Send_String("2c\r\n");
+				printf("2c\r\n");
 				break;
 			case KEY3_PRES: // 控制LED3翻转
-				Usart1_Send_String("3c\r\n");
+				printf("3c\r\n");
 				break;
 			}
 		}

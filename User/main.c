@@ -5,82 +5,54 @@
 #include "uart_dma.h"    // 使用DMA版本的调试函数
 #include "dht11.h"
 #include <stdio.h>
-
-// 函数声明
-void ls_interruptible(void);
-void ysysled(void);
-
-/**
- * @brief 可中断的LED流水灯效果函数
- */
-void ls_interruptible(void)
+#include "timer_general.h"
+#include "htim.h"
+void bbbb()
 {
-	uint32_t led_state[4] = {0, 0, 0, 0};
-	uint32_t flag = 0;
-
-	for (uint32_t i = 0; i < 4;)
-	{
-		// 检查是否有按键中断，如果有则退出
-		if (KEY_Get() != 0)
-		{
-			return;
-		}
-
-		for (uint32_t j = 0; j < 4; j++)
-		{
-			led_state[j] = 1;
-			if (j == i)
-			{
-				led_state[j] = 0;
-			}
-		}
-
-		if (flag)
-		{
-			LED0 = led_state[0];
-			LED1 = led_state[1];
-			LED2 = led_state[2];
-			LED3 = led_state[3];
-		}
-		else
-		{
-			LED3 = led_state[0];
-			LED2 = led_state[1];
-			LED1 = led_state[2];
-			LED0 = led_state[3];
-		}
-
-		i++;
-		if (i == 4)
-		{
-			flag = !flag;
-		}
-
-		i = i % 4;
-		delay_ms(130);
-	}
-}
-void ysysled()
-{
-	uint32_t last_LED0 = 0;
-	uint32_t last_LED1 = 0;
 	while (1)
 	{
-		if (KEY_Get() != 0)
+		if (KEY_Get())
 		{
 			return;
 		}
-		if ((get_systick() - last_LED0) >= 500)
+		
+		for (int i = 0; i <=50; i++)
 		{
-			LED0 = !LED0;
-			last_LED0 = get_systick();
+			Set_PWM_Percentage(i*2);
+			delay_ms(10);	
 		}
+		for (int  i = 0; i <=50; i++)
+		{
+			Set_PWM_Percentage(100-i*2	);
+			delay_ms(10);
+		}
+		
+		
+	}
+	
+}
 
-		if ((get_systick() - last_LED1) >= 800)
+void lllll()
+{
+	while (1)
+	{
+		if (KEY_Get())
 		{
-			LED1 = !LED1;
-			last_LED1 = get_systick();
+			return;
 		}
+		
+		for (int i = 0; i <=50; i++)
+		{
+			Set_PWM_Percentage1(i*2);
+			delay_ms(10);	
+		}
+		for (int  i = 0; i <=50; i++)
+		{
+			Set_PWM_Percentage1(100-i*2	);
+			delay_ms(10);
+		}
+		
+		
 	}
 }
 
@@ -98,7 +70,8 @@ int main(void)
 	DHT11_Init();      // 初始化DHT11（在延时函数初始化后）
 	LED_Set_All(0);	 // 点亮所有LED（低电平点亮）
 	// 实际效果：LED0、LED1、LED2亮，LED3灭（红色LED3未点亮）
-	
+	TIM13_PWM_Init();
+  TIM14_PWM_Init();
 	// 发送初始化完成消息
 	printf("System Ready - Send commands to control LEDs\r\n");
 	Usart1_Send_String("Press keys to control remote LEDs\r\n");
@@ -134,10 +107,13 @@ int main(void)
 				printf("123456789qwertyuiopasdfgjj\n");
 				break;
 			case KEY2_PRES: // 控制LED2翻转
+				
 				printf("2c\r\n");
-				break;
+					bbbb();
+			break;
 			case KEY3_PRES: // 控制LED3翻转
 				printf("3c\r\n");
+				lllll();
 				break;
 			}
 		}

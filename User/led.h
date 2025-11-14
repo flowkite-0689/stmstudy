@@ -114,5 +114,8 @@ uint8_t LED_Is_On(uint8_t led_num);
  * @return 1-熄灭，0-点亮，参数错误返回0
  */
 uint8_t LED_Is_Off(uint8_t led_num);
+// 函数声明
+void ls_interruptible(void);
+void ysysled(void);
 
 #endif /* _LED_H_ */

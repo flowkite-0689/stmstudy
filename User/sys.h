@@ -14,7 +14,9 @@
 
 #include "stm32f4xx.h"
 #include "stm32f4xx_gpio.h"
-
+#include "delay.h"
+#include "uart_dma.h"
+#include "key.h"
 // ==================================
 // 硬件引脚定义
 // ==================================

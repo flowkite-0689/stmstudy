@@ -29,7 +29,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_it.h"
-#include "delay.h"
+#include "code/delay.h"
 
 /** @addtogroup Template_Project
   * @{

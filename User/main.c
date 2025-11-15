@@ -8,6 +8,7 @@
 #include "code/timer_general.h"
 #include "code/htim.h"
 #include "code/music.h"
+#include "code/nnnn_examples.h"
 void bbbb()
 {
 	while (1)

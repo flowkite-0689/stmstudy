@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include "timer_general.h"
 #include "htim.h"
+#include "music.h"
 void bbbb()
 {
 	while (1)
@@ -71,7 +72,7 @@ int main(void)
 	LED_Set_All(1);	 // 点亮所有LED（低电平点亮）
 	// 实际效果：LED0、LED1、LED2亮，LED3灭（红色LED3未点亮）
 	TIM13_PWM_Init();
-  TIM14_PWM_Init();
+//  TIM14_PWM_Init();
 	// 发送初始化完成消息
 	printf("System Ready - Send commands to control LEDs\r\n");
 	Usart1_Send_String("Press keys to control remote LEDs\r\n");
@@ -98,7 +99,7 @@ int main(void)
 			case KEY2_PRES: // 控制LED2翻转
 				
 				printf("2c\r\n");
-					bbbb();
+//					bbbb();
 			break;
 			case KEY1_PRES: // 播放时值演示
 				printf("1c\r\n");
@@ -106,7 +107,7 @@ int main(void)
 				break;
 			case KEY0_PRES: // 播放《春日影》修正版
 				printf("k0 pers\n");
-				
+				play_nnnn_full_melody();
 				break;
 			case KEY3_PRES: // 控制LED3翻转
 				printf("3c\r\n");

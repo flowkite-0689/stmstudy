@@ -221,7 +221,7 @@ void EXTI3_IRQHandler(void);  // KEY2 (PE3) 外部中断
 void EXTI4_IRQHandler(void);  // KEY3 (PE4) 外部中断
 
 /**
- * @brief 获取定时器消抖后的按键触发事件（推荐使用！）
+ * @brief 获取定时器消抖后的按键触发事件
  * @return 按键值：1,2,4,8 对应 KEY0~KEY3，无按键返回 0
  * @note 调用后会自动清除标志，线程安全
  */

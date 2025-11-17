@@ -397,6 +397,9 @@ void Process_Usart_Command(void)
         } else if (strcmp(cmd, "3c") == 0) {
             LED3 = !LED3;
             printf("LED3 toggled\r\n");
+        } else if (strcmp(cmd, "get time") == 0) {
+            
+           RTC_Date_Get();
         } else {
             printf("Unknown command. Type 'help'\r\n");
         }

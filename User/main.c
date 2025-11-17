@@ -9,55 +9,7 @@
 #include "code/htim.h"
 #include "code/music.h"
 #include "code/nnnn_examples.h"
-void bbbb()
-{
-	while (1)
-	{
-		if (KEY_Get())
-		{
-			return;
-		}
-		
-		for (int i = 0; i <=50; i++)
-		{
-			Set_PWM_Percentage(i*2);
-			delay_ms(10);	
-		}
-		for (int  i = 0; i <=50; i++)
-		{
-			Set_PWM_Percentage(100-i*2	);
-			delay_ms(10);
-		}
-		
-		
-	}
-	
-}
-
-void lllll()
-{
-	while (1)
-	{
-		if (KEY_Get())
-		{
-			return;
-		}
-		
-		for (int i = 0; i <=50; i++)
-		{
-			Set_PWM_Percentage1(i*2);
-			delay_ms(10);	
-		}
-		for (int  i = 0; i <=50; i++)
-		{
-			Set_PWM_Percentage1(100-i*2	);
-			delay_ms(10);
-		}
-		
-		
-	}
-}
-
+#include "code/rtc_date.h"
 /**
  * @brief 主函数
  */
@@ -73,6 +25,8 @@ int main(void)
 	LED_Set_All(1);	 // 点亮所有LED（低电平点亮）
 	// 实际效果：LED0、LED1、LED2亮，LED3灭（红色LED3未点亮）
 	TIM13_PWM_Init();
+	RTC_Date_Init();
+	RTC_Date_Get();
 //  TIM14_PWM_Init();
 	// 发送初始化完成消息
 	printf("System Ready - Send commands to control LEDs\r\n");
@@ -85,6 +39,8 @@ int main(void)
 
 	while (1)
 	{
+
+	
 		key = KEY_Get(); // 从中断获取键值
 		
 		// 处理环形缓冲区发送任务（非阻塞）
@@ -100,20 +56,25 @@ int main(void)
 			case KEY2_PRES: // 控制LED2翻转
 				
 				printf("2c\r\n");
+				LED2 =!LED2;
 //					bbbb();
+				RTC_Date_Get();
 			break;
 			case KEY1_PRES: // 播放时值演示
 				printf("1c\r\n");
+				LED1=!LED1;
 //				play_timing_demo();  // 演示不同时值符号
 				break;
 			case KEY0_PRES: // 播放《春日影》修正版
 				printf("k0 pers\n");
-				play_nnnn_full_melody();
+				LED0=!LED0;
+//				play_nnnn_full_melody();
 				break;
 			case KEY3_PRES: // 控制LED3翻转
 				printf("3c\r\n");
-				printf("Playing 3h 2h_ 1h 2h_ | 3h_-_ 4h__ 3h_ 2h-\r\n");
-				play_example_melody();  // 播放nnnn.md示例乐谱
+				// printf("Playing 3h 2h_ 1h 2h_ | 3h_-_ 4h__ 3h_ 2h-\r\n");
+				LED3=!LED3;
+//				play_example_melody();  // 播放nnnn.md示例乐谱
 				break;
 		}
 	}

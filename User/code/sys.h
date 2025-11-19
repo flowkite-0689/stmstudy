@@ -215,6 +215,10 @@
 #define PGout(n) GPIO_OUT(GPIOG, n)  // 输出
 #define PGin(n)  GPIO_IN(GPIOG, n)   // 输入
 
+// GPIOB位带操作宏定义（用于I2C）
+#define PBout(n) GPIO_OUT(GPIOB, n)  // 输出
+#define PBin(n)  GPIO_IN(GPIOB, n)   // 输入
+
 /** @} */
 
 #endif

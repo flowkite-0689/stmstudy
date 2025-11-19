@@ -316,6 +316,13 @@ void Usart1_Send_String(char *string)
     printf("%s", string);
 }
 
+void Usart1_send_bytes(uint8_t *data, uint16_t len)
+{
+    if (data && len > 0) {
+        Usart1_Send_DMA(data, len);
+    }
+}
+
 uint32_t get_usart_rx_count(void)
 {
     return rx_count;

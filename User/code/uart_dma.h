@@ -58,6 +58,13 @@ void Usart1_Send_DMA(uint8_t *data, uint16_t len);
 void Usart1_Send_String(char *string);
 
 /**
+ * @brief 发送单个字节数据（兼容MPU6050驱动）
+ * @param data 要发送的字节
+ * @param len  发送长度（应该为1）
+ */
+void Usart1_send_bytes(uint8_t *data, uint16_t len);
+
+/**
  * @brief 检查是否有完整命令就绪（以 \r 或 \n 结尾）
  * @return 1: 有命令待处理；0: 无命令
  */

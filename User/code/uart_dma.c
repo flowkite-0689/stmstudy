@@ -74,11 +74,13 @@ static uint16_t ringbuf_available(void)
 /**
  * @brief 计算环形缓冲区中剩余空间（最大可写入字节数）
  */
+/*
 static uint16_t ringbuf_free_space(void)
 {
     // 总空间 = SIZE - 1（1字节用于判满）
     return (UART_TX_BUF_SIZE - 1) - ringbuf_available();
 }
+*/
 
 /**
  * @brief 环形缓冲区写入1字节（内部调用，**调用前需关中断**）
@@ -283,8 +285,8 @@ void usart1_dma_tx_init(void)
     DMA_ITConfig(DMA2_Stream7, DMA_IT_TC, ENABLE);
     
     NVIC_InitStruct.NVIC_IRQChannel = DMA2_Stream7_IRQn;
-    NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 0;
-    NVIC_InitStruct.NVIC_IRQChannelSubPriority = 0;
+    NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 2;
+    NVIC_InitStruct.NVIC_IRQChannelSubPriority = 1;
     NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStruct);
 

@@ -1,84 +1,126 @@
 #include "code/led.h"
 #include "code/key.h"
 #include "code/beep.h"
-// #include "debug.h"  // ç§»æ¤åˆ°uart_dma.hä¸­
-#include "code/uart_dma.h"    // ä½¿ç”¨DMAç‰ˆæœ¬çš„è°ƒè¯•å‡½æ•°
+#include "code/uart_dma.h" // Ê¹ÓÃDMA°æ±¾µÄµ÷ÊÔº¯Êı
 #include "code/dht11.h"
 #include <stdio.h>
 #include "code/timer_general.h"
 #include "code/htim.h"
-#include "code/music.h"
-#include "code/nnnn_examples.h"
 #include "code/rtc_date.h"
+#include "code/adc.h"
 /**
- * @brief ä¸»å‡½æ•°
+ * @brief Ö÷º¯Êı
  */
 int main(void)
 {
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); // ä¸­æ–­åˆ†ç»„é…ç½®ä¸€æ¬¡å°±è¡Œ
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
 	debug_init();
-	uint8_t key;					 // ä¿å­˜é”®å€¼
-	SysTick_Init();	 // åˆå§‹åŒ–å»¶æ—¶å‡½æ•°
-	LED_Init();			 // åˆå§‹åŒ–LEDç«¯
-	KEY_Init();			 // åˆå§‹åŒ–ä¸æŒ‰é”®è¿æ¥çš„ç¡¬ä»¶æ¥å£
-	DHT11_Init();      // åˆå§‹åŒ–DHT11ï¼ˆåœ¨å»¶æ—¶å‡½æ•°åˆå§‹åŒ–åï¼‰
-	LED_Set_All(1);	 // ç‚¹äº®æ‰€æœ‰LEDï¼ˆä½ç”µå¹³ç‚¹äº®ï¼‰
-	// å®é™…æ•ˆæœï¼šLED0ã€LED1ã€LED2äº®ï¼ŒLED3ç­ï¼ˆçº¢è‰²LED3æœªç‚¹äº®ï¼‰
-	TIM13_PWM_Init();
+	uint8_t key;		// ±£´æ¼üÖµ
+	SysTick_Init(); // ³õÊ¼»¯ÑÓÊ±º¯Êı
+	LED_Init();			// ³õÊ¼»¯LED¶Ë
+	KEY_Init();			// ³õÊ¼»¯Óë°´¼üÁ¬½ÓµÄÓ²¼ş½Ó¿Ú
+	DHT11_Init();		// ³õÊ¼»¯DHT11£¨ÔÚÑÓÊ±º¯Êı³õÊ¼»¯ºó£©
+	LED_Set_All(1); // µãÁÁËùÓĞLED£¨µÍµçÆ½µãÁÁ£©
+	// Êµ¼ÊĞ§¹û£ºLED0¡¢LED1¡¢LED2ÁÁ£¬LED3Ãğ£¨ºìÉ«LED3Î´µãÁÁ£©
+	// TIM13_PWM_Init();
 	RTC_Date_Init();
-	RTC_Date_Get();
-//  TIM14_PWM_Init();
-	// å‘é€åˆå§‹åŒ–å®Œæˆæ¶ˆæ¯
-	printf("System Ready - Send commands to control LEDs\r\n");
-	Usart1_Send_String("Press keys to control remote LEDs\r\n");
+	TIM14_PWM_Init();
+	// ³õÊ¼»¯ ADC3£¨PF7£©
+	ADC3_Init();
+	ADC1_Init();
+	float revoltage;
+	float voltage;
 
-	// å‡½æ•°å£°æ˜ - ä¸åŒ…å«.cæ–‡ä»¶ï¼Œåªå£°æ˜å‡½æ•°
-	extern void play_example_melody(void);
-	extern void play_timing_demo(void);
-	extern void play_haruhi_correct(void);
-
+	int flag = 0;
 	while (1)
 	{
 
-	
-		key = KEY_Get(); // ä»ä¸­æ–­è·å–é”®å€¼
-		
-		// å¤„ç†ç¯å½¢ç¼“å†²åŒºå‘é€ä»»åŠ¡ï¼ˆéé˜»å¡ï¼‰
-		uart_tx_task();
-		
-		// å¤„ç†ä¸²å£å‘½ä»¤
+		if (flag)
+		{
+			voltage = ADC3_ReadVoltage(3.3f);
+			int percent = voltage * 100 / 3.3f;
+			if (percent > 80)
+			{
+				Set_PWM_Percentage1(0);
+			}
+			else
+			{
+
+				Set_PWM_Percentage1((100 - percent) * 10);
+			}
+		}
+
+		key = KEY_Get();
 		Process_Usart_Command();
-		
-	if (key)
-	{
 		switch (key)
 		{
-			case KEY2_PRES: // æ§åˆ¶LED2ç¿»è½¬
-				
-				printf("2c\r\n");
-				LED2 =!LED2;
-//					bbbb();
-				RTC_Date_Get();
+		case KEY0_PRES:
+			printf("LED1 change\r\n");
+			LED1 = !LED1;
 			break;
-			case KEY1_PRES: // æ’­æ”¾æ—¶å€¼æ¼”ç¤º
-				printf("1c\r\n");
-				LED1=!LED1;
-//				play_timing_demo();  // æ¼”ç¤ºä¸åŒæ—¶å€¼ç¬¦å·
-				break;
-			case KEY0_PRES: // æ’­æ”¾ã€Šæ˜¥æ—¥å½±ã€‹ä¿®æ­£ç‰ˆ
-				printf("k0 pers\n");
-				LED0=!LED0;
-//				play_nnnn_full_melody();
-				break;
-			case KEY3_PRES: // æ§åˆ¶LED3ç¿»è½¬
-				printf("3c\r\n");
-				// printf("Playing 3h 2h_ 1h 2h_ | 3h_-_ 4h__ 3h_ 2h-\r\n");
-				LED3=!LED3;
-//				play_example_melody();  // æ’­æ”¾nnnn.mdç¤ºä¾‹ä¹è°±
-				break;
+		case KEY1_PRES:
+
+			//
+			//
+			printf("Voltage: %.2fV\r\n", voltage);
+			if (voltage < 1)
+			{
+				printf("light V");
+			}
+			else if (voltage < 1.3f)
+			{
+				printf("light IV");
+			}
+			else if (voltage < 1.7f)
+			{
+				printf("light III");
+			}
+			else if (voltage < 2.0f)
+			{
+				printf("light II");
+			}
+			else if (voltage < 2.3f)
+			{
+				printf("light I");
+			}
+			else if (voltage < 2.7f)
+			{
+				printf("drak I");
+			}
+			else if (voltage < 3.0f)
+			{
+				printf("drak II");
+			}
+			else if (voltage < 3.3f)
+			{
+				printf("drak III");
+			}
+			printf("\n");
+
+			revoltage = ADC_ConvertToVoltage(3.3f);
+			printf("reVoltage: %.2fV\r\n", revoltage);
+			break;
+		case KEY2_PRES:
+			RTC_Date_Get();
+			break;
+		case KEY3_PRES:
+
+			if (flag)
+			{
+				printf("Light sensor lamp off\r\n");
+			}
+			else
+			{
+				printf("Light sensor lamp on\r\n");
+			}
+
+			flag = !flag;
+			break;
+		default:
+			break;
 		}
+
+		// ÑÓÊ±£¨¸ù¾İĞèÒªµ÷Õû£©
+		delay_ms(15);
 	}
-	else
-		delay_ms(10);
-}
 }

@@ -288,3 +288,20 @@ void ysysled()
 		}
 	}
 }
+
+
+
+
+
+/// @brief 获取以灯作为二进制转换为十进制
+/// @param LED_State 
+/// @return 一个十进制的数
+uint8_t get_Oct_LED_BIT( uint8_t * LED_State)
+{
+  
+  
+  return ((LED_State[0] & 1) << 0) |
+         ((LED_State[1] & 1) << 1) |
+         ((LED_State[2] & 1) << 2) |
+         ((LED_State[3] & 1) << 3);
+}

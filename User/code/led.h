@@ -116,6 +116,11 @@ uint8_t LED_Is_On(uint8_t led_num);
 uint8_t LED_Is_Off(uint8_t led_num);
 // 函数声明
 void ls_interruptible(void);
-void ysysled(void);
+void ysysled(void) ;
+
+
+uint8_t get_Oct_LED_BIT(uint8_t * LED_State);
+
+
 
 #endif /* _LED_H_ */

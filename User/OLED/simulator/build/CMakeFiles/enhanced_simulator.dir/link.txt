@@ -1,1 +1,0 @@
-/usr/bin/cc  -Wall -Wextra -g -O2 CMakeFiles/enhanced_simulator.dir/src/oled_simulator_enhanced.c.o -o bin/enhanced_simulator  /usr/lib/x86_64-linux-gnu/libSDL2.so liboled_resources.a -lm 

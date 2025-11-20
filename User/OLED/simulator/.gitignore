@@ -1,17 +1,29 @@
-# 模拟器构建输出
-模拟器/build/
-模拟器/CMakeFiles/
-模拟器/CMakeCache.txt
-模拟器/cmake_install.cmake
-模拟器/Makefile
-模拟器/*.cmake
+# OLED模拟器构建目录
+build/
 
-# 模拟器可执行文件
-模拟器/*.exe
-模拟器/OLED_Enhanced_Simulator
-模拟器/oled_simulator_enhanced
+# CMake生成的文件
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+*.cmake
+build.ninja
+.ninja_log
+.ninja_deps
 
-# 对象文件和库文件
+# 可执行文件
+bin/
+*.exe
+*.out
+*.app
+OLED_Enhanced_Simulator
+oled_simulator_enhanced
+basic_simulator
+enhanced_simulator
+basic_example
+simple_test
+
+# 编译输出
 *.o
 *.obj
 *.a
@@ -20,54 +32,25 @@
 *.dll
 *.dylib
 
-# 临时文件
-*.tmp
-*.temp
-*~
-.DS_Store
-Thumbs.db
+# 配置文件（由CMake生成）
+config.h
 
-# IDE和编辑器文件
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.cproject
-.project
-
-# 日志文件
-*.log
-
-# 模拟器配置文件（由CMake生成）
-模拟器/config.h
-
-# 打包文件
-*.tar.gz
-*.zip
-*.deb
-*.rpm
-*.dmg
-*.pkg
-
-# 调试文件
+# 调试和分析文件
 *.dSYM/
 *.su
 *.idb
 *.pdb
-
-# 测试覆盖文件
-gcov/
-*.gcda
-*.gcno
-*.gcov
-lcov/
-
-# 性能分析文件
 *.prof
 
-# 自动生成的文档
-docs/doxygen/
+# 临时和备份文件
+*.tmp
+*.temp
+*~
+*.bak
+*.backup
+*.old
+*.swp
+*.swo
 
 # 操作系统生成的文件
 .DS_Store
@@ -78,34 +61,37 @@ docs/doxygen/
 ehthumbs.db
 Thumbs.db
 
-# 备份文件
-*.bak
-*.backup
-*.old
-
-# STM32特定文件
-*.lst
-*.map
-*.d
-*.iex
-*.hex
-*.bin
-*.out
-*.elf
-
-# Keil / IAR / STM32CubeIDE项目文件
-*.uvprojx
-*.uvoptx
-*.ewp
-*.eww
-*.cproject
-*.project
+# IDE和编辑器文件
+.vscode/
+.idea/
+*.sublime-*
+.cproject
+.project
 *.launch
 
-# FreeRTOS特定文件
-FreeRTOS/
-Middlewares/
+# 日志文件
+*.log
 
-./build/
+# 测试覆盖文件
+gcov/
+*.gcda
+*.gcno
+*.gcov
+lcov/
+
+# 文档生成文件
+docs/doxygen/
+
+# 打包文件
+*.tar.gz
+*.zip
+*.deb
+*.rpm
+*.dmg
+*.pkg
+
+# Core dump文件
+core
+core.*
 
 

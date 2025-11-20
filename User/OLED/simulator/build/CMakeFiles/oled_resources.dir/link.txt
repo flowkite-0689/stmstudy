@@ -1,2 +1,0 @@
-/usr/bin/ar qc liboled_resources.a CMakeFiles/oled_resources.dir/mnt/d/codeStudy/c/stm32/study/demo/User/OLED/logo.c.o
-/usr/bin/ranlib liboled_resources.a

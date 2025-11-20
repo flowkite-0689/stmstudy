@@ -1,1 +1,0 @@
-/usr/bin/cc  -Wall -Wextra -g -O2 CMakeFiles/basic_example.dir/examples/basic_usage.c.o -o bin/basic_example  /usr/lib/x86_64-linux-gnu/libSDL2.so -lm 

@@ -1,5 +1,74 @@
-const unsigned char logo[1024] =
-	{
+// oled_simulator.c
+#include <SDL2/SDL.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+#include "../include/logo.h"
+#define SCALE 4
+#define WIDTH 128
+#define HEIGHT 64
+
+SDL_Window* window = NULL;
+SDL_Renderer* renderer = NULL;
+uint8_t oled_buffer[WIDTH * HEIGHT / 8];  // 模拟OLED显存
+
+void oled_init() {
+    SDL_Init(SDL_INIT_VIDEO);
+    window = SDL_CreateWindow("OLED Simulator", 
+                             SDL_WINDOWPOS_CENTERED, 
+                             SDL_WINDOWPOS_CENTERED,
+                             WIDTH * SCALE, 
+                             HEIGHT * SCALE, 
+                             SDL_WINDOW_SHOWN);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    SDL_RenderSetScale(renderer, SCALE, SCALE);
+}
+
+void oled_draw_pixel(int x, int y, int color) {
+    // 模拟OLED_DrawPoint函数
+    if (x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT) {
+        int byte_index = x + (y / 8) * WIDTH;
+        int bit_mask = 1 << (y % 8);
+        
+        if (color) {
+            oled_buffer[byte_index] |= bit_mask;  // 设置像素
+        } else {
+            oled_buffer[byte_index] &= ~bit_mask; // 清除像素
+        }
+    }
+}
+
+void oled_update_display() {
+    // 清屏
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
+    
+    // 绘制像素
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    for (int x = 0; x < WIDTH; x++) {
+        for (int y = 0; y < HEIGHT; y++) {
+            int byte_index = x + (y / 8) * WIDTH;
+            int bit_mask = 1 << (y % 8);
+            
+            if (oled_buffer[byte_index] & bit_mask) {
+                SDL_RenderDrawPoint(renderer, x, y);
+            }
+        }
+    }
+    
+    SDL_RenderPresent(renderer);
+}
+
+void oled_cleanup() {
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+}
+
+// 简单的开机logo - 一个笑脸
+const uint8_t boot_logo[1024] = {
+    
+        
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0xA0, 0xD0,
 		0xE0, 0xF4, 0xF8, 0xF8, 0x78, 0x30, 0x70, 0x50, 0x80, 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -64,39 +133,6 @@ const unsigned char logo[1024] =
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-}; /*"粤嵌logo.bmp"*/
-
-
-const unsigned char gImage_1[464] = { /* 0X32,0X01,0X00,0X3A,0X00,0X3A, */
-0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X80,0XC0,
-0X60,0X60,0X60,0X60,0XC0,0XC0,0XC0,0X80,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,
-0X00,0X00,0X00,0X00,0X00,0X00,0X80,0X80,0XE0,0XE0,0X60,0X60,0X70,0X60,0XE0,0XE0,
-0X80,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,
-0X00,0X00,0X80,0XE0,0XF0,0XFC,0X9E,0X87,0XC3,0XC0,0XE0,0X60,0X60,0X60,0X30,0X31,
-0X33,0X3F,0X3F,0X1C,0X38,0X30,0X38,0X38,0X38,0X30,0X30,0X38,0X38,0X7C,0X7F,0X77,
-0X63,0XE1,0XC0,0XC0,0XC0,0XC0,0X80,0X00,0X00,0X00,0X03,0X0F,0X7E,0XF8,0XC0,0X00,
-0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0XC0,0XE0,0X70,0X3C,0X1F,0X0F,0X07,0X03,
-0X03,0X01,0X01,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,
-0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X01,0X01,
-0X03,0X03,0X07,0X06,0X0C,0X38,0XF8,0XFF,0XFF,0XFC,0XC0,0X00,0X00,0X00,0X00,0X60,
-0XFC,0XFF,0X07,0X01,0X00,0X00,0X00,0X1E,0X7E,0X7F,0X7F,0X0E,0X00,0X00,0X00,0X00,
-0X00,0X00,0X30,0X60,0X60,0X70,0X70,0X70,0X60,0XE0,0XE0,0X60,0X70,0X00,0X00,0X00,
-0X00,0X00,0X00,0X00,0X3C,0XFF,0XFF,0XFE,0X3C,0X00,0X00,0X00,0X00,0X00,0X00,0X00,
-0X00,0X01,0X07,0X3F,0XFF,0XF0,0X00,0X00,0X00,0X07,0X3F,0XFF,0XF0,0XC0,0X00,0X00,
-0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,
-0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,
-0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X03,0XFF,
-0XFF,0X00,0X00,0X00,0X00,0X00,0X00,0X03,0XFF,0XFE,0X80,0X00,0X00,0X00,0X00,0X00,
-0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,
-0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,
-0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X0F,0XFF,0XFF,0X00,0X00,0X00,0X00,
-0X00,0X00,0X7F,0X7F,0X3F,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,
-0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,
-0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,
-0X00,0X00,0X00,0X20,0X3F,0X3F,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,
-0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,
-0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,
-0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,
 };
 
 
@@ -132,6 +168,62 @@ const unsigned char gImage_bg[512] = { /* 0X32,0X01,0X00,0X40,0X00,0X40, */
 0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,
 0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X06,0X06,0X06,0X00,
 0X00,0X06,0X06,0X06,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,
-0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,
+0X00,0X00,0X00,0X00,0X00,0X40,0X40,0X00,0X00,0X00,0X00,0X00,0X40,0X40,0X00,0X00,
 };
 
+
+
+// 模拟您的OLED_ShowPicture函数
+void OLED_ShowPicture(int x, int y, int sizex, int sizey, const uint8_t BMP[], int mode) {
+    uint16_t j = 0;
+    uint8_t i, m, temp;
+    uint8_t x0 = x, y0 = y;
+    sizey = sizey / 8 + ((sizey % 8) ? 1 : 0);
+    
+    for (uint8_t n = 0; n < sizey; n++) {
+        x = x0;
+        y0 = y + n * 8;
+        for (i = 0; i < sizex; i++) {
+            temp = BMP[j];
+            j++;
+            for (m = 0; m < 8; m++) {
+                if (temp & 0x01) {
+                    // 根据mode决定是否镜像显示
+                    int display_x = (mode == 1) ? (x + sizex - 1 - i) : (x + i);
+                    int display_y = y0 + m;
+                    
+                    if (display_x >= 0 && display_x < WIDTH && display_y >= 0 && display_y < HEIGHT) {
+                        oled_draw_pixel(display_x, display_y, 1);
+                    }
+                }
+                temp >>= 1;
+            }
+        }
+    }
+}
+
+int main() {
+    oled_init();
+    
+    // 清空缓冲区
+    memset(oled_buffer, 0, sizeof(oled_buffer));
+    
+    // 显示开机图像
+    OLED_ShowPicture(32, 0, 64, 64, gImage_bg, 0);
+    
+    int running = 1;
+    while (running) {
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                running = 0;
+            }
+        }
+        
+        oled_update_display();
+        SDL_Delay(16); // 约60FPS
+    }
+    
+    oled_cleanup();
+    return 0;
+}

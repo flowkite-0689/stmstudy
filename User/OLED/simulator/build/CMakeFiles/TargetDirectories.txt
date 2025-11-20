@@ -1,0 +1,12 @@
+/mnt/d/codeStudy/c/stm32/study/demo/User/OLED/simulator/build/CMakeFiles/oled_resources.dir
+/mnt/d/codeStudy/c/stm32/study/demo/User/OLED/simulator/build/CMakeFiles/basic_simulator.dir
+/mnt/d/codeStudy/c/stm32/study/demo/User/OLED/simulator/build/CMakeFiles/enhanced_simulator.dir
+/mnt/d/codeStudy/c/stm32/study/demo/User/OLED/simulator/build/CMakeFiles/simple_test.dir
+/mnt/d/codeStudy/c/stm32/study/demo/User/OLED/simulator/build/CMakeFiles/basic_example.dir
+/mnt/d/codeStudy/c/stm32/study/demo/User/OLED/simulator/build/CMakeFiles/run_enhanced.dir
+/mnt/d/codeStudy/c/stm32/study/demo/User/OLED/simulator/build/CMakeFiles/run_basic.dir
+/mnt/d/codeStudy/c/stm32/study/demo/User/OLED/simulator/build/CMakeFiles/run_test.dir
+/mnt/d/codeStudy/c/stm32/study/demo/User/OLED/simulator/build/CMakeFiles/run_example.dir
+/mnt/d/codeStudy/c/stm32/study/demo/User/OLED/simulator/build/CMakeFiles/distclean.dir
+/mnt/d/codeStudy/c/stm32/study/demo/User/OLED/simulator/build/CMakeFiles/edit_cache.dir
+/mnt/d/codeStudy/c/stm32/study/demo/User/OLED/simulator/build/CMakeFiles/rebuild_cache.dir

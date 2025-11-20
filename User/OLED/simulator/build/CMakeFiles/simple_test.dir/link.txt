@@ -1,0 +1,1 @@
+/usr/bin/cc  -Wall -Wextra -g -O2 CMakeFiles/simple_test.dir/src/simple_test_image.c.o -o bin/simple_test  /usr/lib/x86_64-linux-gnu/libSDL2.so liboled_resources.a -lm 

@@ -1,0 +1,1 @@
+/usr/bin/cc  -Wall -Wextra -g -O2 CMakeFiles/basic_simulator.dir/src/oled_simulator.c.o -o bin/basic_simulator  /usr/lib/x86_64-linux-gnu/libSDL2.so liboled_resources.a -lm 

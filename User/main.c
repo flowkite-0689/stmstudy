@@ -69,8 +69,8 @@ int main(void)
 
 
 	//开机图像，oled输出
-
-OLED_ShowPicture(0, 0, 58, 58, gImage_1, 1);
+OLED_Printf_Line(0,"     ^^    ^^   ");
+OLED_Printf_Line(1,"        --   ");
  OLED_Refresh(); // 更新显存，后才显示设置内容
         delay_ms(5000);
         OLED_Clear();		// 清屏

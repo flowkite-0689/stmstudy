@@ -23,7 +23,7 @@
 #include "stm32f4xx.h"
 #include "inv_mpu_dmp_motion_driver.h"
 
-//定义输出速度
+//???????????
 #define DEFAULT_MPU_HZ  (100)		//100Hz
 
 #define INV_X_GYRO      (0x40)
@@ -33,7 +33,7 @@
 #define INV_XYZ_ACCEL   (0x08)
 #define INV_XYZ_COMPASS (0x01)
 
-//移植官方MSP430 DMP驱动过来
+//??????MSP430 DMP????????
 struct int_param_s {
 
     void (*cb)(void);
@@ -60,6 +60,12 @@ struct int_param_s {
 /* Set up APIs */
 int mpu_init(void);
 u8 mpu_dmp_init(void);
+u8 mpu_dmp_init_pedometer(void);
+u8 mpu_pedometer_update(void);
+u8 enable_pedometer_feature(void);
+u8 enable_high_sensitivity_pedometer(void);  // 添加新的高灵敏度计步器函数声明
+u8 process_pedometer_data(void);
+u8 safe_pedometer_update(void);
 int mpu_init_slave(void);
 int mpu_set_bypass(unsigned char bypass_on);
 
@@ -124,12 +130,11 @@ int mpu_reg_dump(void);
 int mpu_read_reg(unsigned char reg, unsigned char *data);
 int mpu_run_self_test(long *gyro, long *accel);
 int mpu_register_tap_cb(void (*func)(unsigned char, unsigned char));
-//自行添加的一些函数
+//??????????Щ????
 void mget_ms(unsigned long *time);
 unsigned short inv_row_2_scale(const signed char *row);
 unsigned short inv_orientation_matrix_to_scalar(const signed char *mtx);
 u8 run_self_test(void);
-u8 mpu_dmp_init(void);
 u8 mpu_dmp_get_data(float *pitch,float *roll,float *yaw);
 
 #endif  /* #ifndef _INV_MPU_H_ */

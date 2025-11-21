@@ -6,7 +6,8 @@
     "led.h": "c",
     "key.h": "c",
     "sdl.h": "c",
-    "cstdint": "c"
+    "cstdint": "c",
+    "oled_print.h": "c"
   },
   "cmake.sourceDirectory": "/mnt/d/codeStudy/c/stm32/study/demo/User/OLED/simulator"
 }

@@ -24,7 +24,7 @@
 #include "dmpKey.h"
 #include "dmpmap.h"
 
-//定义目标板采用MSP430
+//?????????????MSP430
 #define  MOTION_DRIVER_TARGET_MSP430
 
 /* The following functions must be defined for this platform:
@@ -915,7 +915,15 @@ int dmp_get_pedometer_step_count(unsigned long *count)
     if (mpu_read_mem(D_PEDSTD_STEPCTR, 4, tmp))
         return -1;
 
-    count[0] = ((unsigned long)tmp[0] << 24) | ((unsigned long)tmp[1] << 16) |
+    // 检查读取的数据是否有效，防止出现负数
+    if ((tmp[0] & 0x80) != 0) {
+        // 如果最高位为1，说明是有符号数且为负数，重置计数器
+        dmp_set_pedometer_step_count(0);
+        *count = 0;
+        return 0;
+    }
+
+    *count = ((unsigned long)tmp[0] << 24) | ((unsigned long)tmp[1] << 16) |
         ((unsigned long)tmp[2] << 8) | tmp[3];
     return 0;
 }
@@ -952,7 +960,15 @@ int dmp_get_pedometer_walk_time(unsigned long *time)
     if (mpu_read_mem(D_PEDSTD_TIMECTR, 4, tmp))
         return -1;
 
-    time[0] = (((unsigned long)tmp[0] << 24) | ((unsigned long)tmp[1] << 16) |
+    // 检查读取的数据是否有效，防止出现负数
+    if ((tmp[0] & 0x80) != 0) {
+        // 如果最高位为1，说明是有符号数且为负数，重置计时器
+        dmp_set_pedometer_walk_time(0);
+        *time = 0;
+        return 0;
+    }
+
+    *time = (((unsigned long)tmp[0] << 24) | ((unsigned long)tmp[1] << 16) |
         ((unsigned long)tmp[2] << 8) | tmp[3]) * 20;
     return 0;
 }

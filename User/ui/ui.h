@@ -1,11 +1,12 @@
-#ifndef _UI_H_
-#define _UI_H_
+#ifndef __UI_H
+#define __UI_H
 
-
-#include "setting.h"
-#include "stopwatch.h"
+#include "sys.h"
 #include "TandH.h"
+#include "stopwatch.h"
+#include "setting.h"
 #include "flashlight.h"
 #include "alarm_menu.h"
+#include "step.h"
 
 #endif

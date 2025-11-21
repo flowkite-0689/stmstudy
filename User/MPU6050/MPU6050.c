@@ -1,6 +1,8 @@
 #include "stm32f4xx.h"
 #include "mpu6050.h"
 #include "stdio.h"
+#include "eMPL/inv_mpu.h"
+#include "eMPL/inv_mpu_dmp_motion_driver.h"
 
 u8 MPU_Init(void)
 {
@@ -176,3 +178,27 @@ void MPU_ReportImu(short aacx,short aacy,short aacz,short gyrox,short gyroy,shor
 	tbuf[23]=yaw&0XFF;
 	MPU_NimingReport(0XAF,tbuf,28);//飞控显示帧,0XAF
 } 
+
+// 计步器步数设置包装函数
+int dmp_set_pedometer_step_count_wrap(unsigned long count)
+{
+	return dmp_set_pedometer_step_count(count);
+}
+
+// 计步器时间设置包装函数
+int dmp_set_pedometer_walk_time_wrap(unsigned long time)
+{
+	return dmp_set_pedometer_walk_time(time);
+}
+
+// 计步器步数获取包装函数
+int dmp_get_pedometer_step_count_wrap(unsigned long *count)
+{
+	return dmp_get_pedometer_step_count(count);
+}
+
+// 计步器时间获取包装函数
+int dmp_get_pedometer_walk_time_wrap(unsigned long *time)
+{
+	return dmp_get_pedometer_walk_time(time);
+}

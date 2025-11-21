@@ -19,6 +19,6 @@ extern const unsigned char gImage_bell[128];
 extern const unsigned char gImage_list[128] ;
 extern const unsigned char gImage_new[128];
 extern const unsigned char gImage_add[128];
-
+extern const unsigned char gImage_step[128];
 
 #endif

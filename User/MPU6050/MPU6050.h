@@ -107,6 +107,15 @@ short MPU_Get_Temperature(void);
 u8 MPU_Get_Gyroscope(short *gx,short *gy,short *gz);
 u8 MPU_Get_Accelerometer(short *ax,short *ay,short *az);
 void MPU_ReportImu(short aacx,short aacy,short aacz,short gyrox,short gyroy,short gyroz,short roll,short pitch,short yaw);
+
+// DMP计步器功能函数
+// mpu_dmp_init() - 初始化DMP功能，支持姿态计算（欧拉角）和运动检测
+// mpu_dmp_init_pedometer() - 专门用于计步器功能的DMP初始化，只启用计步器和原始传感器数据
+// 根据应用场景选择合适的初始化函数
+int dmp_set_pedometer_step_count_wrap(unsigned long count);
+int dmp_set_pedometer_walk_time_wrap(unsigned long time);
+int dmp_get_pedometer_step_count_wrap(unsigned long *count);
+int dmp_get_pedometer_walk_time_wrap(unsigned long *time);
 #endif
 
 

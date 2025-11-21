@@ -9,7 +9,7 @@
 #include "logo.h"
 
 
-
+void flashlight(void);
 
 
 #endif

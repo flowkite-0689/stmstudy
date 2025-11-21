@@ -25,7 +25,7 @@ static const char *get_weekday_name(u8 weekday)
 }
 
 // 选项的图标
-unsigned char *options[] =
+const unsigned char *options[] =
 		{
 				gImage_stopwatch,
 				gImage_setting,
@@ -35,7 +35,7 @@ unsigned char *options[] =
 
 };
 
-void enter_select(u8 selected)
+u8 enter_select(u8 selected)
 {
 	switch (selected)
 	{
@@ -52,10 +52,13 @@ void enter_select(u8 selected)
 		case 3:
 		flashlight();
 		break;
-
+case 4:
+alarm_menu();
+break;
 	default:
 		break;
 	}
+	return selected;
 }
 
 void menu_Refresh(u8 selected)
@@ -90,12 +93,12 @@ u8 menu(u8 cho)
 		if (flag_RE)
 		{
 			OLED_Clear();
-			menu_Refresh(cho);
+			menu_Refresh(selected);
 
 			flag_RE = 0;
 		}
 
-		if (key = KEY_Get())
+		if ((key = KEY_Get())!=0)
 		{
 			switch (key)
 			{
@@ -119,10 +122,10 @@ u8 menu(u8 cho)
 			case KEY2_PRES:
 				OLED_Clear();
 				return selected;
-				break;
+	
 			case KEY3_PRES:
 				flag_RE = 1;
-				enter_select(selected); // 进入所选择的菜单项
+				selected= enter_select(selected); // 进入所选择的菜单项
 				break;
 
 			default:
@@ -157,7 +160,7 @@ int main()
 		OLED_Refresh_Dirty();
 		delay_ms(1000);
 
-		if (key = KEY_Get())
+		if ((key = KEY_Get())!=0)
 		{
 			switch (key)
 			{

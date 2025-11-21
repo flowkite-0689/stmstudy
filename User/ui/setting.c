@@ -161,7 +161,7 @@ void Process_Set_Time(void)
     Display_Set_Time();
     
     while (1) {
-        if (key = KEY_Get()) {
+        if ((key = KEY_Get())!=0) {
             printf("Key pressed: %d\n", key);  // 调试信息
             switch (key) {
                 case KEY0_PRES:  // 增加
@@ -235,7 +235,7 @@ void Process_Set_Date(void)
     Display_Set_Date();
     
     while (1) {
-        if (key = KEY_Get()) {
+        if ((key = KEY_Get())!=0) {
             printf("Key pressed: %d\n", key);  // 调试信息
             switch (key) {
                 case KEY0_PRES:  // 增加
@@ -336,7 +336,7 @@ void Process_Set_Date(void)
 
 
 // 选项的图标
-unsigned char *set_options[] =
+const unsigned char *set_options[] =
     {
         gImage_clock,
         gImage_calendar
@@ -383,7 +383,7 @@ void setting()
        flag_RE=0;
     }
     
-    if (key = KEY_Get())
+    if ((key = KEY_Get())!=0)
     {
       switch (key)
       {
@@ -407,7 +407,7 @@ void setting()
       case KEY2_PRES:
         OLED_Clear();
         return ;
-        break;
+       
       case KEY3_PRES:
       flag_RE=1;
         set_Enter_select(selected); // 进入所选择的菜单项

@@ -6,5 +6,6 @@
 #include "stopwatch.h"
 #include "TandH.h"
 #include "flashlight.h"
+#include "alarm_menu.h"
 
 #endif

@@ -15,7 +15,7 @@ void flashlight()
   u8 key ;
   while (1)
   {
-    if (key =KEY_Get())
+    if ((key =KEY_Get())!=0)
     {
       switch (key)
       {
@@ -36,7 +36,7 @@ void flashlight()
         case KEY2_PRES:
         LED0=1;
         return;
-        break;
+       
       
       default:
         break;

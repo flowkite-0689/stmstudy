@@ -13,6 +13,10 @@ extern const unsigned char gImage_flashlight[128];
 extern const unsigned char gImage_setting[128];
 extern const unsigned char gImage_stopwatch[128];
 extern const unsigned char gImage_TandH[128];
+extern const unsigned char gImage_sun[128] ;
+extern const unsigned char gImage_moon[128];
+extern const unsigned char gImage_bell[128];
+
 
 
 #endif

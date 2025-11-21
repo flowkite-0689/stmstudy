@@ -3,7 +3,8 @@
 
 
 #include "setting.h"
-
-
+#include "stopwatch.h"
+#include "TandH.h"
+#include "flashlight.h"
 
 #endif

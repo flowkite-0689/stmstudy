@@ -98,7 +98,7 @@ u8 menu(u8 cho)
 	u8 key;
 	while (1)
 	{
-
+delay_ms(10);
 		if (flag_RE)
 		{
 			OLED_Clear();

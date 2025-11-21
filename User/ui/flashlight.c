@@ -15,6 +15,7 @@ void flashlight()
   u8 key ;
   while (1)
   {
+    delay_ms(10);
     if ((key =KEY_Get())!=0)
     {
       switch (key)

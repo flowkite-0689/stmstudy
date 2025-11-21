@@ -6,4 +6,13 @@ extern const unsigned char gImage_1[1024];
 extern const unsigned char logo[1024];
 extern const unsigned char gImage_bg[512];
 extern const unsigned char gImage_bgg[512] ;
+extern const unsigned char gImage_xbg[128];
+extern const unsigned char gImage_calendar[128] ;
+extern const unsigned char gImage_clock[128] ;
+extern const unsigned char gImage_flashlight[128];
+extern const unsigned char gImage_setting[128];
+extern const unsigned char gImage_stopwatch[128];
+extern const unsigned char gImage_TandH[128];
+
+
 #endif

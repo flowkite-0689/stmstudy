@@ -5,7 +5,8 @@
     "stm32f4xx.h": "c",
     "led.h": "c",
     "key.h": "c",
-    "sdl.h": "c"
+    "sdl.h": "c",
+    "cstdint": "c"
   },
   "cmake.sourceDirectory": "/mnt/d/codeStudy/c/stm32/study/demo/User/OLED/simulator"
 }

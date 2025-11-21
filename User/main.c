@@ -89,7 +89,7 @@ void menu_Refresh(u8 selected)
 	OLED_ShowPicture(96, 16, 32, 32, options[right], 1);
 	OLED_Refresh();
 }
-// ?????????????????????????ˇˇ??ˇˇ???
+// ?????????????????????????ÔøΩÔøΩ??ÔøΩÔøΩ???
 u8 menu(u8 cho)
 {
 	u8 flag_RE = 1;
@@ -98,7 +98,7 @@ u8 menu(u8 cho)
 	u8 key;
 	while (1)
 	{
-delay_ms(10);
+		delay_ms(10);
 		if (flag_RE)
 		{
 			OLED_Clear();
@@ -172,10 +172,10 @@ int main()
 	{
 		printf("MPU6050 Device ID OK\r\n");
 	}
-	
+
 	// ????????
 	simple_pedometer_init();
-	
+
 	// ????????????DMP????????????????
 
 	u8 key;
@@ -190,16 +190,18 @@ int main()
 	{
 		// ??RTC??
 		RTC_Date_Get();
-		OLED_Printf_Line(0, "%02d/%02d/%02d %s",
+		OLED_Printf_Line(0, "%02d/%02d/%02d     %s",
 
 										 g_RTC_Date.RTC_Year + 2000,
 										 g_RTC_Date.RTC_Month,
 										 g_RTC_Date.RTC_Date,
 										 get_weekday_name(g_RTC_Date.RTC_WeekDay));
-		OLED_Printf_Line(1, "%02d:%02d:%02d",
-										 g_RTC_Time.RTC_Hours,
-										 g_RTC_Time.RTC_Minutes,
-										 g_RTC_Time.RTC_Seconds);
+		// ÊòæÁ§∫Êó∂Èó¥ 32ÂÉèÁ¥†
+
+		OLED_Printf_Line_32(1, " %02d:%02d:%02d",
+												g_RTC_Time.RTC_Hours,
+												g_RTC_Time.RTC_Minutes,
+												g_RTC_Time.RTC_Seconds);
 
 		// ???????????
 		short ax, ay, az;
@@ -207,7 +209,7 @@ int main()
 
 		// ???????
 		loop_counter++;
-		
+
 		// ?????????????????????
 		simple_pedometer_update(ax, ay, az);
 		unsigned long count = g_step_count;
@@ -239,11 +241,17 @@ int main()
 
 		printf("Current step: %ld\r\n", count);
 
-		OLED_Printf_Line(2, "step : %lu", count);     // ????
-		OLED_Printf_Line(3, "simple mode");           // ????
+		OLED_Printf_Line(3, "step : %lu", count); // ????
+																							// ????
 		OLED_Refresh_Dirty();
 		delay_ms(50); // ???????????
 
+
+		if ()
+		{
+			/* code */
+		}
+		
 		if ((key = KEY_Get()) != 0)
 		{
 			switch (key)

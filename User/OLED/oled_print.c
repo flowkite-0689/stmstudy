@@ -49,6 +49,35 @@ void OLED_Printf_Line(uint8_t line, const char* format, ...)
 }
 
 /**
+ * @brief OLED行打印函数32px - 在指定行打印信息
+ */
+void OLED_Printf_Line_32(uint8_t line, const char* format, ...)
+{
+    if (line >= OLED_MAX_LINES) return; // 防止越界
+    
+    va_list args;
+    va_start(args, format);
+    
+    // 计算Y坐标
+    uint8_t y = line * OLED_LINE_HEIGHT;
+    
+    // 格式化字符串
+    vsnprintf(oled_buffer, sizeof(oled_buffer), format, args);
+    
+    // 清除该行
+    OLED_Clear_Line(line);
+    
+    // 显示字符串
+    OLED_ShowString(0, y, (uint8_t*)oled_buffer, 24, 1);
+    
+    // 标记该行为脏区域，用于局部刷新
+    OLED_Set_Dirty_Area(0, y, 127, y + (OLED_LINE_HEIGHT*2) - 1);
+    
+    va_end(args);
+}
+
+
+/**
  * @brief OLED清屏指定行
  */
 void OLED_Clear_Line(uint8_t line)

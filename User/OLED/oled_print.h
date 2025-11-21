@@ -52,5 +52,6 @@ void OLED_Display_Info(uint8_t mode, const char* info);
  * @param unit 单位
  */
 void OLED_Display_Sensor(const char* sensor_name, float data1, float data2, const char* unit);
+void OLED_Printf_Line_32(uint8_t line, const char* format, ...);
 
 #endif // __OLED_PRINT_H__

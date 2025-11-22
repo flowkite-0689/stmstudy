@@ -3,7 +3,7 @@
 
 char *test_opt[] = {
     "SPI_test",
-    "MPU6050",
+    "2048_oled",
     "light_test",
     "test_1",
     "t2",
@@ -59,6 +59,9 @@ void test_enter_select(u8 selected)
   {
   case 0:
     SPI_test();
+    break;
+    case 1 :
+    menu_2048_oled();
     break;
 
   default:
@@ -145,6 +148,7 @@ void testlist()
 
       case KEY3_PRES:
         flag_RE = 1;
+        OLED_Clear();
         test_enter_select(selected); // ???????????????
         break;
 

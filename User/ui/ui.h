@@ -10,5 +10,5 @@
 #include "stopwatch.h"
 #include "TandH.h"
 #include "testlist.h"
-
+#include "2048_oled.h"
 #endif

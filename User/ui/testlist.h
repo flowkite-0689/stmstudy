@@ -6,6 +6,7 @@
 #include "oled_print.h"
 #include "delay.h"
 #include "spi.h"
+#include "2048_oled.h"
 
 void testlist(void);
 #endif

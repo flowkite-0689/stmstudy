@@ -5,5 +5,7 @@
 #include "oled.h"
 #include "oled_print.h"
 #include "delay.h"
+#include "spi.h"
+
 void testlist(void);
 #endif

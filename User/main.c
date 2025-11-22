@@ -308,11 +308,11 @@ int main()
 				printf("out menu\r\n");
 				break;
 
-			case KEY2_PRES:
-				// 强制触发闹钟测试 (用于调试)
-				printf("Manual alarm test triggered\r\n");
-				Alarm_ForceTrigger();
-				break;
+			// case KEY2_PRES:
+			// 	// 强制触发闹钟测试 (用于调试)
+			// 	printf("Manual alarm test triggered\r\n");
+			// 	Alarm_ForceTrigger();
+			// 	break;
 
 			default:
 				break;

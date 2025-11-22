@@ -31,7 +31,7 @@ static const char* get_weekday_name(u8 weekday)
 /**
  * @brief 主函数
  */
-int main(void)
+// int main(void)
 {
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
 	debug_init();
